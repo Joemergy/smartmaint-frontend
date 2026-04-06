@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smartmaint – Registro de Empresa</title>
+
+  <!-- Tipografías -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+
+</head>
+<body>
+
+  <!-- Encabezado -->
+  <header class="topbar">
+    <div class="logo">
+      <img src="logosmartmaint.png" alt="Smartmaint Logo" />
+    </div>
+    <nav>
+      <ul>
+        <li><a href="registro.html">Registrar Usuario</a></li>
+        <li><a href="equipos.html">Equipos</a></li>
+        <li><a href="#">Reportes</a></li>
+        <li><a href="#">Cerrar sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Sección Registro Empresa -->
+  <section class="register-section" id="registrar-empresa">
+    <div class="register-container" data-aos="fade-up">
+      <h2>Registrar Empresa</h2>
+      <form class="register-form">
+        <label for="id_empresa">ID de Empresa</label>
+        <input type="text" id="id_empresa" name="id_empresa" placeholder="Ej: EMP001" required>
+
+        <label for="sector">Sector</label>
+        <input type="text" id="sector" name="sector" placeholder="Ej: Manufactura, Salud, Logística" required>
+
+        <label for="correo_admin">Correo del Administrador</label>
+        <input type="email" id="correo_admin" name="correo_admin" placeholder="admin@empresa.com" required>
+
+        <label for="contrasena">Contraseña</label>
+        <input type="password" id="contrasena" name="contrasena" placeholder="Crea una contraseña segura" required>
+
+        <label for="plan">Plan</label>
+        <input type="text" id="plan" name="plan" placeholder="Ej: Básico, Premium, Corporativo" required>
+
+        <button type="submit">Registrar Empresa</button>
+
+        <p class="helper-text">
+          ¿Ya tienes empresa registrada? <a href="registro.html">Registrar empleados</a>
+        </p>
+      </form>
+    </div>
+  </section>
+
+  <!-- AOS Init -->
+  <script>
+    AOS.init({ duration: 800, once: true });
+  </script>
+
+  <!-- Script de conexión al backend -->
+  <script>
+    document.querySelector(".register-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = {
+        id_empresa: document.getElementById("id_empresa").value.trim(),
+        sector: document.getElementById("sector").value.trim(),
+        correo_admin: document.getElementById("correo_admin").value.trim(),
+        contrasena: document.getElementById("contrasena").value.trim(),
+        plan: document.getElementById("plan").value.trim()
+      };
+
+      if (!data.id_empresa || !data.sector || !data.correo_admin || !data.contrasena || !data.plan) {
+        alert("⚠️ Todos los campos son obligatorios");
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:8080/api/empresa", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+
+        const result = await res.text();
+        if (res.ok) {
+          alert("✅ Empresa registrada exitosamente");
+          window.location.href = "registro.html";
+        } else {
+          alert("⚠️ " + result);
+        }
+      } catch (err) {
+        alert("❌ Error de conexión con el servidor");
+        console.error("Error:", err);
+      }
+    });
+  </script>
+
+</body>
+</html>

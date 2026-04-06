@@ -1,0 +1,16 @@
+/* HistoriaTareasAdmin.css */
+
+.historial-content {
+  width: 100%;
+  padding: 0;
+  background-color: #ffffff;
+  color: #1e293b;
+  display: grid;
+  gap: 24px;
+  align-content: start;
+}
+
+.historial-content .barra-filtros {
+  margin: 0;
+  width: 100%;
+}

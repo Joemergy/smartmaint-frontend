@@ -1,0 +1,1185 @@
+﻿DOCUMENTACION COMPLETA DEL PROYECTO SMARTMAINT
+Ultima actualizacion: 05 de abril de 2026
+
+================================================================================
+1. PROPOSITO GENERAL DEL PROYECTO
+================================================================================
+
+SmartMaint es una plataforma web para gestionar mantenimiento operativo y tareas
+institucionales. El sistema esta dividido en tres bloques principales:
+
+- Frontend: aplicacion React donde el usuario interactua con paginas publicas,
+  login, paneles y formularios.
+- Backend: API REST en Spring Boot que autentica usuarios, aplica reglas de
+  negocio, accede a PostgreSQL y envia correos electronicos.
+- Base de datos: scripts SQL que crean o ajustan tablas y soportan la evolucion
+  del sistema.
+
+Funcionalidades principales:
+
+- Registrar empresas y activar cuentas
+- Autenticar usuarios con JWT
+- Recuperar contrasena via correo electronico (contrasena temporal)
+- Asignar y gestionar tareas por colaborador
+- Administrar estados de tareas (pendiente / en proceso / completado / cancelado)
+- Registrar notas en tareas
+- Administrar usuarios por rol (SUPERADMIN / ADMIN / USUARIO)
+- Ofrecer demos institucionales con vigencia limitada
+- Mostrar notificaciones y paneles diferenciados por rol
+- Exportar tareas archivadas a Excel
+
+
+================================================================================
+2. ESTRUCTURA GENERAL DEL WORKSPACE
+================================================================================
+
+El workspace tiene tres carpetas principales:
+
+2.1. BackendSmartmaint
+     Servidor Spring Boot. Logica de negocio, seguridad, persistencia, 
+     validaciones y envio de correos.
+
+2.2. BASE DE DATOS
+     Scripts SQL de respaldo y cambios incrementales. Permite crear, reparar
+     o evolucionar la base de datos.
+
+2.3. Smartmaint-frontend
+     Aplicacion React. Paginas, componentes, servicios HTTP y estilos CSS.
+
+
+================================================================================
+3. TECNOLOGIAS UTILIZADAS
+================================================================================
+
+3.1. Frontend
+
+- React 18
+- React Router DOM 6
+- Axios para peticiones HTTP
+- CSS plano por componente/pagina
+- xlsx para exportar tareas a Excel
+- sessionStorage (token) + localStorage (datos de sesion, tema, idioma)
+
+3.2. Backend
+
+- Java 21
+- Spring Boot 3.5.6
+- Spring Web / Spring Security / Spring Data JPA / Spring Validation / Spring Mail
+- PostgreSQL
+- JWT con io.jsonwebtoken
+- Lombok
+- OpenAPI / Springdoc (config/OpenApiConfig.java)
+
+3.3. Pruebas
+
+- JUnit / Spring Boot Test / Mockito / H2 (base en memoria para pruebas)
+
+
+================================================================================
+4. COMO ARRANCA TODO
+================================================================================
+
+4.1. Frontend
+
+Archivos de entrada:
+- src/index.js            Crea el root de React y monta App dentro de AuthProvider
+- src/context/AuthContext.jsx  Provee sesion global a toda la aplicacion
+- src/App.jsx             Define todas las rutas publicas y privadas
+- src/services/themeService.js  Carga tema e idioma guardados al inicio
+
+Comando de desarrollo:
+  npm start   (puerto 3000 por defecto)
+
+Variable de entorno clave:
+  REACT_APP_API_URL   URL base del backend (default: http://localhost:8080)
+
+4.2. Backend
+
+Punto de entrada:
+- SmartmaintApplication.java
+
+Script de reinicio:
+- backend/iniciar-backend.ps1
+  Libera el puerto 8080 si esta ocupado y lanza spring-boot:run.
+  Util porque mata el proceso anterior automaticamente.
+
+4.3. Base de datos
+
+Configuracion en application.properties del backend:
+- Motor: PostgreSQL
+- Base: smartmaint_staging
+- Puerto del backend: 8080
+- Esquema por defecto: smartmaint
+- Migraciones gestionadas con Flyway
+
+
+================================================================================
+5. ARQUITECTURA DE ALTO NIVEL
+================================================================================
+
+Flujo basico de una accion del usuario:
+
+1. El usuario interactua con una pantalla en React.
+2. Un componente llama a un service del frontend (src/services/).
+3. apiClient.js intercepta la llamada, adjunta el JWT del header
+   Authorization y controla si la sesion expiro.
+4. El backend recibe la peticion en un Controller.
+5. El Controller delega al Service correspondiente.
+6. El Service aplica logica y usa Repositories para leer/escribir en BD.
+7. JPA guarda o lee la informacion en PostgreSQL.
+8. El backend responde con JSON usando ApiResponses.java como helper.
+9. React actualiza la interfaz segun el resultado.
+
+Gestion de errores:
+- GlobalExceptionHandler.java captura todas las excepciones no manejadas
+  y devuelve ApiErrorResponse con status, codigo y mensaje estructurado.
+- SecurityExceptionHandlers.java maneja errores 401 y 403 propios de
+  Spring Security sin pasar por el GlobalExceptionHandler.
+
+
+================================================================================
+6. FRONTEND: GESTION DE SESION Y CONTEXTO
+================================================================================
+
+El token JWT se guarda en sessionStorage (se pierde al cerrar el tab).
+El resto de datos se guarda en localStorage.
+
+6.1. src/utils/session.js
+
+Modulo central de gestion de sesion. Exporta:
+
+- STORAGE_KEYS         Mapa de claves de storage (token, rol, rolId, correo,
+                       empresa, plan, idUsuario, nombre, idColaborador, cargo,
+                       telefono, requiereCambioContrasena)
+- getToken()           Lee el token desde sessionStorage (con fallback a localStorage)
+- getAuthHeader()      Construye { Authorization: 'Bearer <token>' }
+- parseJwtPayload()    Decodifica el payload del JWT sin libreria externa
+- getSessionSnapshot() Devuelve un objeto completo con todos los datos de sesion
+- isTokenExpired()     Verifica si el JWT ya vencio comparando con Date.now()
+- clearStoredSession() Limpia token y todos los datos de storage
+- expireSession()      clearStoredSession + dispara CustomEvent SESSION_EXPIRED_EVENT
+- updateStoredSession() Actualiza campos puntuales en storage
+- persistSessionFromAuth() Escribe todos los datos de sesion desde la respuesta del login
+- SESSION_EXPIRED_EVENT   Nombre del evento custom de sesion expirada
+
+6.2. src/context/AuthContext.jsx
+
+Provee la sesion como contexto global de React.
+Responsabilidades:
+- Inicializa la sesion leyendo storage al montar
+- Programa un setTimeout para expirar la sesion cuando vence el JWT
+- Escucha el evento SESSION_EXPIRED_EVENT para sincronizar tabs
+- Expone: session, loginFromResponse(), logout()
+
+6.3. src/hooks/useAuth.js
+
+Hook que consume AuthContext. Lanza error si se usa fuera del AuthProvider.
+
+6.4. src/services/apiClient.js
+
+Wrapper de axios con baseURL = API_BASE_URL + /api.
+- Interceptor de REQUEST: adjunta Content-Type y Authorization, verifica
+  expiracion del token y llama expireSession() si ya vencio.
+- Interceptor de RESPONSE: llama expireSession() ante 401/403.
+- PUBLIC_ENDPOINTS: lista de rutas que no requieren token.
+  Actualmente: /auth/login y /empresas.
+
+6.5. src/services/themeService.js
+
+Lee y aplica tema (claro / oscuro) e idioma desde localStorage.
+Se llama en el useEffect inicial de App.jsx.
+
+
+================================================================================
+7. FRONTEND: ENRUTAMIENTO (App.jsx)
+================================================================================
+
+App.jsx usa React Router v6 con lazy loading (React.lazy + Suspense).
+Mientras carga un modulo muestra <LoadingScreen /> como fallback.
+
+Rutas publicas (dentro de <Layout />):
+  /                           LandingPage
+  /login                      Login (con modal de recuperacion de contrasena)
+  /recuperar-contrasena       RecuperarContrasena (ruta de respaldo visual)
+  /cambiar-contrasena-inicial CambioContrasenaInicial
+  /planes                     Planes
+  /demo                       Demo
+  /confirmacion-compra        ConfirmacionCompra
+  /registro-confirmado        RegistroConfirmado
+  /activar-cuenta             ActivarCuenta
+
+Rutas protegidas ADMIN y SUPERADMIN:
+  /admin                      Redirige a /dashboard-tareas
+  /super-admin                Redirige a /dashboard-tareas
+  /crear-tarea                CrearTarea
+  /crear-usuario              CrearUsuarioAdmin
+  /eliminar-usuario           EliminarUsuarioAdmin
+  /tareas-asignadas           TareasAsignadasAdmin
+  /dashboard-tareas           DashboardTareas
+  /historial-tareas-admin     HistorialTareasAdmin
+  /exportar-eliminar-tareas-admin   ExportarEliminarTareasAdmin
+  /perfil-admin               PerfilAdmin
+  /ajustes-admin              AjustesAdmin
+  /ajustes                    RoleRedirect -> ajustes-admin o ajustes-usuario
+  /perfil                     RoleRedirect -> perfil-admin o perfil-usuario
+
+Rutas protegidas USUARIO:
+  /usuario                    Redirige a /dashboard-usuario
+  /dashboard-usuario          DashboardUsuario
+  /mis-tareas                 UsuarioPanel
+  /historial-tareas-usuario   HistorialTareasUsuario
+  /exportar-eliminar-tareas-usuario  ExportarEliminarTareasUsuario
+  /perfil-usuario             PerfilUsuario
+  /ajustes-usuario            AjustesUsuario
+
+Nota importante sobre RutaProtegida.jsx:
+  SUPERADMIN puede entrar a rutas con rolRequerido="ADMIN".
+
+
+================================================================================
+8. FRONTEND: PAGINAS PUBLICAS
+================================================================================
+
+8.1.  src/LandingPage.jsx + LandingPage.css
+      Pagina de entrada publica. Contiene banner, hero, ComoFunciona y FAQ.
+      Es la puerta de entrada comercial del sistema.
+
+8.2.  src/ComoFunciona.jsx + ComoFunciona.css
+      Seccion informativa sobre el flujo de uso de la plataforma.
+      Se incluye en LandingPage.
+
+8.3.  src/PreguntasFrecuentes.jsx + PreguntasFrecuentes.css
+      Bloque de FAQ de la pagina principal.
+      Actua como ancla de navegacion desde el logo SMARTMAINT en Layout.
+
+8.4.  src/Login.jsx + Login.css
+      Pantalla de inicio de sesion.
+      - Valida correo y contrasena
+      - Llama a authService.login()
+      - Si la respuesta incluye requiereCambioContrasena=true, redirige a
+        /cambiar-contrasena-inicial automaticamente
+      - Navega a /dashboard-tareas (ADMIN/SUPERADMIN) o /mis-tareas (USUARIO)
+      - Incluye MODAL de recuperacion de contrasena:
+        * Se abre al hacer clic en "Click aqui" junto a "Olvidaste tu contrasena"
+        * Overlay con backdrop-filter blur
+        * Campo de correo electronico
+        * Llama a authService.recuperarContrasena(correo)
+        * Al exito muestra confirmation con icono SVG de check
+        * Estados: idle / sending / ok / error
+
+8.5.  src/RecuperarContrasena.jsx
+      Ruta de respaldo visual (/recuperar-contrasena). El flujo real
+      ocurre en el modal de Login.jsx, esta ruta existe como fallback.
+
+8.6.  src/CambioContrasenaInicial.jsx + CambioContrasenaInicial.css
+      Pantalla obligatoria para cambiar la contrasena temporal al primer ingreso.
+      Se activa cuando el login detecta requiereCambioContrasena=true.
+
+8.7.  src/Planes.jsx + Planes.css
+      Pagina comercial con oferta de planes. Fondo personalizado con imagen.
+
+8.8.  src/Demo.jsx + Demo.css
+      Solicitud de demo institucional via formulario.
+      POST /api/demo/solicitar. Muestra credenciales de respaldo si el backend
+      las devuelve.
+
+8.9.  src/ConfirmacionCompra.jsx + ConfirmacionCompra.css
+      Pagina que confirma la compra o adquisicion de un plan.
+
+8.10. src/RegistroConfirmado.jsx + RegistroConfirmado.css
+      Informa que el registro fue completado con exito.
+
+8.11. src/ActivarCuenta.jsx + ActivarCuenta.css
+      Atiende el flujo de activacion de cuenta post-registro.
+
+8.12. src/RegistroEmpresa.jsx + RegistroEmpresa.css
+      Formulario para registrar una empresa en el sistema.
+
+8.13. src/SolicitudDemo.jsx + Solicitud.Demo.css
+      Version alternativa/anterior del formulario demo. Convive con Demo.jsx.
+
+8.14. src/CredencialesDemo.jsx
+      Componente auxiliar para mostrar credenciales demo al usuario.
+
+
+================================================================================
+9. FRONTEND: PAGINAS PRIVADAS ADMIN Y SUPERADMIN
+================================================================================
+
+9.1.  src/AdminPanel.jsx
+      Panel principal del administrador (redirige a /dashboard-tareas).
+
+9.2.  src/SuperAdminPanel.jsx + SuperAdminPanel.css
+      Panel del superadministrador.
+
+9.3.  src/DashboardTareas.jsx + DashboardTareas.css
+      Dashboard de monitoreo de tareas para ADMIN/SUPERADMIN.
+      - Muestra 4 KPIs: Pendientes / En Proceso / Completadas / Canceladas
+      - Cada KPI es CLICKEABLE: al hacer clic filtra la lista por ese estado
+      - Clic de nuevo en el mismo KPI resetea el filtro (modo toggle)
+      - Los estados que usa para filtrar: 'pendiente', 'en proceso',
+        'completado', 'cancelado' (valores exactos de la BD)
+      - Por defecto muestra todas las tareas sin filtro
+
+9.4.  src/TareasAsignadasAdmin.jsx
+      Lista de tareas asignadas a colaboradores. Vista principal de gestion
+      de tareas del admin.
+      Texto hero: "Revisa las tareas que has asignado a cada colaborador"
+
+9.5.  src/HistorialTareasAdmin.jsx + HistorialTareasAdmin.css
+      Historial de tareas archivadas para administradores.
+      Texto hero: "Echa un vistazo al registro de tareas archivadas"
+
+9.6.  src/ExportarEliminarTareasAdmin.jsx + ExportarEliminarTareas.css
+      Permite al admin/superadmin:
+      - Filtrar tareas archivadas por rango de fechas
+      - Seleccionarlas individualmente o en bloque
+      - Exportarlas a Excel (xlsx)
+      - Eliminarlas de forma permanente
+
+9.7.  src/CrearTarea.jsx + CrearTarea.css
+      Formulario de creacion de tareas. Permite:
+      - Seleccionar colaborador (dropdown con lista de usuarios)
+      - Definir si la tarea es grupal (boton Si/No)
+      - Si es grupal: aparece un segundo dropdown identico al de colaborador
+        para seleccionar un colaborador grupal adicional
+      - Categoria, maquina, prioridad, descripcion, observaciones
+      - Adjuntar archivos
+      - Envia como FormData (multipart/form-data); axios gestiona el
+        Content-Type automaticamente SIN setearlo manualmente
+
+9.8.  src/CrearUsuarioAdmin.jsx + CrearUsuarioAdmin.css
+      Formulario para que el admin cree usuarios internos.
+      Texto hero: "Dale una bienvenida a tu nuevo colaborador"
+
+9.9.  src/EliminarUsuarioAdmin.jsx + EliminarUsuarioAdmin.css
+      Lista y elimina usuarios internos.
+      Texto hero: "Administra los colaboradores de tu equipo"
+
+9.10. src/PerfilAdmin.jsx + PerfilAdmin.css
+      Perfil del administrador. Incluye:
+      - Avatar clickeable: al hacer clic abre selector de archivo para cambiar foto
+      - Hover sobre el avatar muestra overlay "Cambiar foto"
+      - Campos de lectura: idColaborador, cargo (leidos de sesion)
+      - Formulario de edicion de nombre y correo
+      - Seccion separada para cambio de contrasena (con campos actual / nueva /
+        confirmar)
+      - Layout de dos columnas en escritorio, una columna en movil
+      - Modal de exito al guardar cambios (overlay blur + tarjeta animada con check)
+
+9.11. src/AjustesAdmin.jsx + AjustesAdmin.css
+      Configuracion del administrador (tema, idioma, preferencias de cuenta).
+
+
+================================================================================
+10. FRONTEND: PAGINAS PRIVADAS USUARIO
+================================================================================
+
+10.1. src/DashboardUsuario.jsx
+      Dashboard del usuario estandar.
+
+10.2. src/UsuarioPanel.jsx + UsuarioPanel.css
+      Panel principal del usuario estandar. Muestra sus tareas activas.
+
+10.3. src/HistorialTareasUsuario.jsx + HistorialTareasUsuario.css
+      Historial de tareas del usuario autenticado.
+      Texto hero: "Visualiza tus tareas completadas y archivadas"
+
+10.4. src/ExportarEliminarTareasUsuario.jsx + ExportarEliminarTareas.css
+      Version para usuario del flujo de exportar o eliminar tareas archivadas.
+
+10.5. src/PerfilUsuario.jsx + PerfilUsuario.css
+      Perfil del usuario estandar. Incluye:
+      - Avatar clickeable con overlay "Cambiar foto"
+      - Formulario de edicion de nombre y correo
+      - Seccion de cambio de contrasena
+      - Modal de exito al guardar cambios
+
+10.6. src/AjustesUsuario.jsx
+      Ajustes del usuario final.
+
+
+================================================================================
+11. FRONTEND: COMPONENTES REUTILIZABLES Y DE SOPORTE
+================================================================================
+
+11.1. Componentes UI generico (src/components/ui/)
+
+  - LoadingScreen.jsx   Pantalla de carga usada como fallback de Suspense
+  - InputField.jsx      Campo de formulario generico. Soporta prop as="select"
+                        para renderizar como dropdown en lugar de input
+  - Button.jsx          Boton generico
+  - Card.jsx            Tarjeta generica de contenido
+  - Modal.jsx           Modal generico reutilizable
+  - Badge.jsx           Etiqueta visual de estado o categoria
+
+11.2. Componentes admin (src/components/admin/)
+
+  - TaskCard.jsx        Tarjeta de tarea para vistas admin
+  - TaskFilters.jsx     Componente de filtros de tareas
+  - TaskList.jsx        Lista de tareas para vistas admin
+
+11.3. Componentes usuario (src/components/usuario/)
+
+  - UsuarioTaskCard.jsx     Tarjeta de tarea para el panel del usuario
+  - EstadoDropdown.jsx      Dropdown para cambiar el estado de una tarea
+  - TaskNotesModal.jsx      Modal para ver y agregar notas a una tarea
+  - usuarioPanelConfig.js   Configuracion de columnas/campos del panel usuario
+
+11.4. Layout y navegacion
+
+  - src/Layout.jsx + Layout.css
+    Contenedor de paginas publicas. Controla cuando mostrar el header publico.
+
+  - src/Sidebar.jsx
+    Barra lateral de ADMIN/SUPERADMIN. Tiene enlaces a: panel, tareas,
+    historial, usuarios, exportacion, perfil, ajustes.
+
+  - src/UserSidebar.jsx
+    Barra lateral del usuario estandar.
+
+  - src/PanelHeader.jsx
+    Encabezado interior de paneles privados.
+
+  - src/AdminHeader.jsx
+    Encabezado para vistas de administracion.
+
+  - src/Header.jsx + Header.css
+    Header generico del proyecto.
+
+  - src/Footer.jsx + Footer.css
+    Pie de pagina reutilizable.
+
+  - src/RutaProtegida.jsx
+    Protege rutas segun token y rol en localStorage.
+    SUPERADMIN puede acceder a rutas de ADMIN.
+
+  - src/RoleRedirect.jsx
+    Resuelve rutas genericas (/perfil, /ajustes) al componente correcto segun rol.
+
+11.5. Componentes de tareas compartidos
+
+  - src/BarraFiltros.jsx + BarraFiltros.css
+    Filtros visuales reutilizables para listas de tareas.
+
+  - src/TareaDetalle.jsx + TareaDetalle.css
+    Detalle completo de una tarea.
+
+  - src/EstadoSelector.jsx
+    Selector visual para cambiar o mostrar el estado de una tarea.
+
+11.6. Estilos globales
+
+  - src/index.css         Estilos base globales
+  - src/App.css           Estilos globales del contenedor principal
+  - src/styles/design-system.css   Variables y tokens de diseno del sistema
+
+
+================================================================================
+12. FRONTEND: SERVICIOS HTTP (src/services/)
+================================================================================
+
+12.1. src/services/apiClient.js
+
+Instancia central de axios.
+- baseURL: API_BASE_URL + /api
+- timeout: 12000ms
+- Interceptor REQUEST: adjunta Content-Type + Authorization (JWT),
+  verifica expiracion del token
+- Interceptor RESPONSE: llama expireSession() en 401/403
+- PUBLIC_ENDPOINTS: ['/auth/login', '/empresas'] (sin token)
+
+12.2. src/services/authService.js
+
+Responsabilidades:
+- login(correo, contrasena)           POST /api/auth/login
+- recuperarContrasena(correo)         POST /api/auth/recuperar-contrasena
+  [NUEVO] Envia correo con contrasena temporal al correo registrado.
+  El backend siempre responde 200 sin revelar si el correo existe.
+- cambiarContrasenaInicial(actual, nueva)  PUT /api/auth/cambiar-contrasena-inicial
+- registrarEmpresa(data)              POST /api/empresas
+- registrarCompraPlan(payload)        POST /api/empresas/planes/compra
+
+12.3. src/services/tareaService.js
+
+Centraliza llamadas a /api/tareas.
+Operaciones:
+- listar tareas del usuario autenticado
+- listar tareas del admin
+- obtener tarea por id
+- crear tarea (FormData multipart, SIN setear Content-Type manualmente)
+  [CORREGIDO] Antes se seteaba Content-Type: multipart/form-data sin boundary,
+  causando error 500. Ahora se deja a axios asignarlo automaticamente.
+- actualizar estado
+- agregar nota simple
+- listar notas
+- crear nota nueva
+- actualizar tarea completa (multipart)
+- eliminar tarea
+- filtrar por rango de fechas (para exportacion)
+
+12.4. src/services/notificacionService.js
+      Consulta y marca notificaciones como leidas. GET/PUT /api/notificaciones.
+
+12.5. src/services/usuarioService.js
+      Operaciones sobre usuarios: listar, crear, actualizar, eliminar.
+
+12.6. src/services/correo.service.js
+      Servicio auxiliar para integracion de mensajes o correos.
+
+12.7. src/services/themeService.js
+      Lee y aplica tema (data-theme) e idioma (lang) desde localStorage.
+
+
+================================================================================
+13. FRONTEND: UTILIDADES
+================================================================================
+
+13.1. src/utils/session.js
+      (Documentado en seccion 6.1)
+
+13.2. src/utils/session.test.js
+      Pruebas unitarias del modulo de sesion.
+
+13.3. src/profileStorage.js
+      Utilidad para persistencia local relacionada con datos del perfil.
+
+
+================================================================================
+14. BACKEND: ESTRUCTURA DE PAQUETES
+================================================================================
+
+Ubicacion base: backend/src/main/java/com/smartmaint
+
+Capas:
+  api/        Helper de respuestas HTTP (ApiResponses.java)
+  config/     Configuracion global (Security, Jackson, OpenAPI, excepciones de seguridad)
+  controller/ Endpoints REST
+  dto/        Objetos de transferencia (request/response)
+  exception/  Manejo global de errores (GlobalExceptionHandler, ApiErrorResponse)
+  model/      Entidades JPA
+  repository/ Interfaces Spring Data JPA
+  service/    Logica de negocio
+  util/       JWT, filtros, sanitizacion de inputs
+
+
+================================================================================
+15. BACKEND: ARCHIVOS DE CONFIGURACION
+================================================================================
+
+15.1. SmartmaintApplication.java
+      Punto de arranque de Spring Boot.
+      Al iniciar verifica cuantos PasswordEncoder beans estan disponibles.
+
+15.2. config/SecurityConfig.java
+      Define la politica de seguridad HTTP.
+      Endpoints publicos (sin token):
+        POST /api/auth/login
+        POST /api/auth/register
+        POST /api/auth/recuperar-contrasena    [NUEVO]
+        POST /api/empresas
+        POST /api/empresas/planes/compra
+        GET  /api/empresas/activar
+        GET  /api/empresas/validar-id/**
+        POST /api/demo/solicitar
+        GET  /api/demo/listar (solo ADMIN/SUPERADMIN)
+        GET  /api/test-db
+        /error
+      Todo lo demas requiere autenticacion con JWT.
+      CORS configurado para origenes de desarrollo (localhost:3000, etc.).
+      Politica stateless (sin sesiones HTTP).
+      Filtro JWT incorporado: JwtFilter.
+
+15.3. config/JacksonConfig.java
+      Configuracion de serializacion JSON (fechas, formatos, ObjectMapper).
+
+15.4. config/OpenApiConfig.java
+      Configuracion de Springdoc/OpenAPI para documentacion de la API.
+
+15.5. config/SecurityExceptionHandlers.java
+      Maneja errores 401 y 403 de Spring Security devolviendo JSON estructurado
+      (no la respuesta por defecto de Spring).
+
+15.6. exception/GlobalExceptionHandler.java
+      Captura todas las excepciones no manejadas en controllers y devuelve
+      ApiErrorResponse con status, codigo de error y mensaje legible.
+      Maneja: IllegalArgumentException, NullPointerException,
+      MethodArgumentNotValidException, ConstraintViolationException,
+      HttpMessageNotReadableException, Exception (catch-all).
+
+15.7. exception/ApiErrorResponse.java
+      Clase de respuesta de error estandarizada. Campos:
+      timestamp, status, error, code, message, path, details.
+
+15.8. api/ApiResponses.java
+      Clase utilitaria con metodos estaticos para construir ResponseEntity.
+      Metodos: message(), badRequest(), unauthorized(), forbidden(),
+               notFound(), internalError(), error().
+
+15.9. util/InputSanitizer.java
+      Sanitiza inputs antes de procesarlos.
+      normalizeEmail(): trim + lowercase.
+      normalizeText(): quita caracteres de control, trim.
+      normalizeText(value, maxLength): lo anterior con truncado.
+
+15.10. util/JwtUtil.java
+       Genera y valida tokens JWT.
+
+15.11. util/JwtFilter.java
+       Filtra cada request: lee el header Authorization, valida el JWT,
+       extrae correo y rol, y monta el usuario autenticado en el contexto
+       de Spring Security.
+
+
+================================================================================
+16. BACKEND: CONTROLADORES
+================================================================================
+
+16.1. controller/AuthController.java
+
+Endpoints:
+  POST /api/auth/login
+    Valida credenciales, devuelve JWT + datos de usuario + requiereCambioContrasena.
+  POST /api/auth/register
+    Registra un nuevo usuario/empresa.
+  GET  /api/auth/me
+    Devuelve datos del usuario autenticado (requiere token).
+  PUT  /api/auth/cambiar-contrasena-inicial
+    Cambia la contrasena inicial. Requiere token + contrasenaActual + nuevaContrasena.
+    Limpia el flag debeCambiarContrasena tras el cambio.
+  POST /api/auth/recuperar-contrasena          [NUEVO]
+    Endpoint publico (sin token).
+    Recibe { correo }.
+    Llama a UsuarioService.recuperarContrasena() que guarda la contrasena
+    temporal en BD (transaccion separa del envio del correo).
+    Luego llama a RecuperacionEmailService.enviarContrasenaTemporal().
+    Si el correo no existe, igualmente responde 200 (sin revelar existencia).
+    Si el correo falla, lo loguea como warning pero no devuelve error al usuario.
+    SIEMPRE responde 200 con el mismo mensaje generico.
+
+16.2. controller/EmpresaController.java
+      Gestiona empresas y su ciclo de activacion/consulta.
+
+16.3. controller/UsuarioController.java
+      CRUD de usuarios gestionados por administradores.
+
+16.4. controller/RolController.java
+      Expone roles del sistema.
+
+16.5. controller/TareaController.java
+      Controlador central de tareas. Gestiona:
+      - Listar tareas por usuario o admin
+      - Obtener tarea por id
+      - Crear tarea (multipart con archivos)
+      - Actualizar estado
+      - Agregar nota simple
+      - Listar notas / crear nota nueva
+      - Actualizar tarea completa
+      - Eliminar tarea
+      - Listar por correo o por rango de fechas
+
+16.6. controller/NotificacionController.java
+      Leer y actualizar notificaciones del usuario autenticado.
+
+16.7. controller/EquipoController.java
+      Gestiona maquinas o equipos del sistema.
+
+16.8. controller/ArchivoController.java
+      Sirve archivos subidos o gestiona acceso a uploads.
+
+16.9. controller/DemoController.java
+      Recibe solicitudes de demo institucional.
+      Devuelve credenciales demo de SUPERADMIN, ADMIN y USUARIO.
+
+16.10. controller/TestController.java
+       Controller auxiliar para verificar conectividad o estado del sistema.
+
+16.11. controller/DemoTest.java
+       Archivo mal ubicado (nombre de prueba pero en carpeta de produccion).
+       Conviene revisar si es necesario o si puede moverse a src/test.
+
+
+================================================================================
+17. BACKEND: SERVICIOS
+================================================================================
+
+17.1. service/AuthService.java
+      Valida credenciales, registra usuarios y centraliza la autenticacion.
+      Detecta credenciales legacy (texto plano) y las migra a BCrypt.
+
+17.2. service/UsuarioService.java
+      Administra usuarios: crear en empresa del admin, actualizar, eliminar,
+      listar por empresa y rol, cambiar contrasena inicial.
+      [NUEVO] Metodo recuperarContrasena(correo):
+        - Busca el usuario por correo (silencioso si no existe)
+        - Genera contrasena temporal de 12 chars con SecureRandom
+        - Charset: A-Z a-z 0-9 !@#$ (sin caracteres ambiguos)
+        - Codifica en BCrypt y guarda en BD con debeCambiarContrasena=true
+        - Retorna [contrasenaTemporal, nombreUsuario] para que el controller
+          envie el correo FUERA de la transaccion
+        - La transaccion de BD confirma ANTES del envio del correo
+          (garantia: aunque el correo falle, la contrasena ya esta en BD)
+
+17.3. service/EmpresaService.java
+      Logica de negocio de empresas, incluye activacion y consulta.
+
+17.4. service/RolService.java
+      Consulta y gestion de roles.
+
+17.5. service/TareaService.java
+      Servicio central de tareas. Responsabilidades:
+      - Validar estados validos
+      - CRUD de tareas
+      - Actualizacion de estado con generacion de notificaciones
+      - Crear y listar notas de tarea
+      - Filtrar por colaborador, estado, prioridad, categoria, fechas
+
+17.6. service/NotificacionService.java
+      Genera notificaciones automaticas (asignacion, cambio de estado).
+      Permite al usuario consultar y marcar como leidas.
+
+17.7. service/EquipoService.java
+      Logica asociada a equipos o maquinaria.
+
+17.8. service/DemoService.java
+      Genera demos institucionales completos:
+      - Valida nombre, empresa y correo
+      - Revisa cooldown por IP
+      - Evita duplicados por empresa
+      - Crea empresa demo
+      - Crea tres cuentas (SUPERADMIN, ADMIN, USUARIO)
+      - Guarda registro de auditoria
+      - Dispara correo con credenciales
+      - Devuelve credenciales en la respuesta
+
+17.9. service/DemoEmailService.java
+      Construye y envia el correo de demo con credenciales y fecha de expiracion.
+
+17.10. service/DemoCleanupService.java
+       Limpia o desactiva demos expiradas.
+
+17.11. service/PurchaseEmailService.java
+       Envia correo de confirmacion de compra con credenciales de acceso.
+       Usa JavaMailSender con template HTML.
+       Remitente configurado en app.purchase.mail.from.
+       Patron base para otros servicios de correo del proyecto.
+
+17.12. service/RecuperacionEmailService.java    [NUEVO]
+       Envia el correo de recuperacion de contrasena.
+       Patron identico a PurchaseEmailService.
+       Remitente: app.purchase.mail.from (mismo remitente verificado en Brevo)
+       URL de login: app.demo.login.url
+       Template HTML con:
+         - Header azul SMARTMAINT
+         - Caja amarilla con la contrasena temporal en grande
+         - Boton "Iniciar sesion"
+         - Aviso de que debe cambiar la contrasena al ingresar
+         - Nota de seguridad si no fue el usuario quien lo solicito
+       Usa ObjectProvider<JavaMailSender> para no fallar si el mail no esta
+       configurado en el contexto (falla en runtime, no en inicio).
+
+
+================================================================================
+18. BACKEND: MODELOS JPA
+================================================================================
+
+18.1. model/Usuario.java
+      Campos clave: id, nombre, correo, contrasena (BCrypt), rol, empresa,
+      idColaborador, cargo, telefono, imagen (avatar), demo, expiraEn,
+      debeCambiarContrasena, createdAt.
+
+18.2. model/Rol.java
+      Roles del sistema: SUPERADMIN, ADMIN, USUARIO.
+
+18.3. model/Empresa.java
+      Empresa a la que pertenece el usuario.
+
+18.4. model/PlanEmpresa.java
+      Enum con planes de empresa, incluye DEMO.
+
+18.5. model/Tarea.java
+      Entidad central. Campos: id, titulo, descripcion, estado, prioridad,
+      categoria, maquina, colaborador, fechaCreacion, fechaVencimiento,
+      grupal, colaboradorGrupal, observaciones, archivos, auditoria.
+
+18.6. model/NotaTarea.java
+      Notas asociadas a una tarea.
+
+18.7. model/Notificacion.java
+      Notificaciones del sistema vinculadas a usuarios y eventos de tareas.
+
+18.8. model/Equipo.java
+      Maquinaria o equipos de la empresa.
+
+18.9. model/DemoRegistro.java
+      Audita solicitudes demo (nombre, empresa, IP, fecha).
+
+18.10. model/TareaAuditLog.java
+       Registro de auditoria de cambios en tareas (historial de estados u
+       otras modificaciones importantes).
+
+
+================================================================================
+19. BACKEND: DTOS
+================================================================================
+
+- dto/LoginRequest.java               Payload de login
+- dto/RegisterRequest.java            Payload de registro
+- dto/ChangePasswordRequest.java      Payload de cambio de contrasena
+- dto/EmpresaDTO.java                 Datos de empresa para intercambio
+- dto/EquipoCreateDTO.java            Payload de creacion de equipo
+- dto/EquipoDTO.java                  Representacion de equipo
+- dto/TareaDTO.java                   Representacion serializable de tarea
+- dto/NotaTareaDTO.java               Representacion de una nota
+- dto/CreateNotaRequest.java          Payload de creacion de nota
+- dto/UpdateEstadoRequest.java        Payload de actualizacion de estado
+- dto/NotificacionDTO.java            Representacion de notificacion
+- dto/UsuarioCreateDTO.java           Creacion de usuario por admin
+- dto/UsuarioDTO.java                 Vista general de usuario
+- dto/UsuarioUpdateDTO.java           Actualizacion de usuario
+- dto/UsuarioDemoDTO.java             Estructura del flujo demo
+- dto/PlanCompraRequestDTO.java       Payload de compra de plan
+
+
+================================================================================
+20. BACKEND: REPOSITORIES
+================================================================================
+
+- repository/UsuarioRepository.java
+  findByCorreo, findByIdColaborador, findByEmpresaIdAndRolNombreIgnoreCaseOrderByCreatedAtAsc
+
+- repository/RolRepository.java
+  findByNombre, findByNombreIgnoreCase
+
+- repository/EmpresaRepository.java
+  findByNombreIgnoreCase, busquedas por id/activacion
+
+- repository/TareaRepository.java
+  Filtros por colaborador, estado, fechas, rango para exportacion
+
+- repository/TareaAuditLogRepository.java
+  Historial de cambios de tareas
+
+- repository/NotaTareaRepository.java
+  Notas por tarea
+
+- repository/NotificacionRepository.java
+  Notificaciones por usuario, no leidas
+
+- repository/EquipoRepository.java
+  Equipos por empresa
+
+- repository/DemoRegistroRepository.java
+  Control de solicitudes demo por IP y tiempo (cooldown)
+
+
+================================================================================
+21. BACKEND: CONFIGURACION EN application.properties
+================================================================================
+
+Base de datos:
+  spring.datasource.url=jdbc:postgresql://localhost:5432/smartmaint_staging
+  spring.datasource.username=postgres
+  Esquema: smartmaint
+
+Servidor:
+  server.port=8080
+
+Multipart (subida de archivos):
+  spring.servlet.multipart.max-file-size=10MB
+  spring.servlet.multipart.max-request-size=10MB
+
+Correo (Brevo/Sendinblue SMTP):
+  spring.mail.host=${SPRING_MAIL_HOST:smtp-relay.sendinblue.com}
+  spring.mail.port=${SPRING_MAIL_PORT:587}
+  spring.mail.username=${SPRING_MAIL_USERNAME:...}
+  spring.mail.password=${SPRING_MAIL_PASSWORD:...}
+  spring.mail.properties.mail.smtp.auth=true
+  spring.mail.properties.mail.smtp.starttls.enable=true
+
+Propiedades de la app:
+  app.purchase.mail.from       Remitente para correos de compra y recuperacion
+  app.demo.mail.from           Remitente para correos de demo
+  app.demo.login.url           URL de login incluida en correos
+  app.demo.request.cooldown.hours   Cooldown de solicitudes demo
+
+Flyway (migraciones):
+  spring.flyway.enabled=true
+  spring.flyway.default-schema=smartmaint
+  spring.flyway.locations=classpath:db/migration
+
+Logging:
+  logging.level.root=INFO
+  logging.level.org.springframework=ERROR
+  logging.level.com.smartmaint=DEBUG
+
+
+================================================================================
+22. BASE DE DATOS: ARCHIVOS SQL
+================================================================================
+
+Carpeta: BASE DE DATOS
+
+22.1. Smartmaint_Database_exportBackup.sql
+      Respaldo completo. Mejor punto de partida para reconstruir la BD.
+
+22.2. 2026-03-23-critical-auth-db-fixes.sql
+      Correcciones criticas de autenticacion/estructura de usuarios.
+
+22.3. 2026-03-28-add-notificaciones-table.sql
+      Agrega la tabla de notificaciones.
+
+22.4. 2026-03-28-add-usuario-profile-and-password-reset.sql
+      Agrega campos de perfil de usuario y soporte para reset de contrasena.
+      Incluye el campo debeCambiarContrasena en la tabla usuario.
+
+22.5. 2026-04-02-add-nota-tarea-table.sql
+      Agrega la tabla de notas de tareas.
+
+22.6. 2026-04-02-promote-admin-to-superadmin.sql
+      Introduce o ajusta el rol SUPERADMIN en la BD.
+
+
+================================================================================
+23. FLUJOS FUNCIONALES PRINCIPALES
+================================================================================
+
+23.1. Flujo de login
+
+  Login.jsx -> authService.login() -> POST /api/auth/login
+  -> AuthService.validarCredenciales() -> JwtUtil.generarToken()
+  -> Frontend: persistSessionFromAuth() guarda token y datos
+  -> Si requiereCambioContrasena=true: navega a /cambiar-contrasena-inicial
+  -> Si no: navega a /dashboard-tareas (ADMIN/SUPERADMIN) o /mis-tareas (USUARIO)
+
+  Archivos involucrados:
+    Frontend: Login.jsx, authService.js, session.js, AuthContext.jsx
+    Backend:  AuthController.java, AuthService.java, JwtUtil.java, JwtFilter.java,
+              SecurityConfig.java
+
+23.2. Flujo de recuperacion de contrasena     [NUEVO]
+
+  Login.jsx (click en "Click aqui") -> abre modal interno
+  -> Usuario ingresa correo -> handleRecuperar() 
+  -> authService.recuperarContrasena(correo) -> POST /api/auth/recuperar-contrasena
+  -> AuthController.recuperarContrasena()
+  -> UsuarioService.recuperarContrasena():
+       busca usuario, genera contrasena temporal (SecureRandom 12 chars),
+       encripta con BCrypt, setea debeCambiarContrasena=true, guarda (COMMIT)
+  -> RecuperacionEmailService.enviarContrasenaTemporal():
+       envia correo HTML con la contrasena temporal y boton "Iniciar sesion"
+  -> El response es siempre 200 (no revela si el correo existe)
+  -> Frontend muestra pantalla de confirmacion con check
+  -> Usuario recibe correo, ingresa con contrasena temporal
+  -> Login detecta requiereCambioContrasena=true -> redirige a /cambiar-contrasena-inicial
+  -> Usuario establece nueva contrasena -> debeCambiarContrasena se limpia en BD
+  -> Usuario entra al panel normal
+
+  Archivos involucrados:
+    Frontend: Login.jsx, authService.js, Login.css
+    Backend:  AuthController.java, UsuarioService.java, RecuperacionEmailService.java,
+              SecurityConfig.java
+
+23.3. Flujo de tareas
+
+  CrearTarea.jsx -> tareaService.crearTarea() -> POST /api/tareas (multipart)
+  -> TareaController -> TareaService (valida, guarda, crea notificaciones)
+  -> Las listas de tareas se consultan segun rol (admin ve todas, usuario ve las suyas)
+  -> Cambios de estado generan notificaciones automaticas
+  -> Tareas archivadas se exportan a Excel con xlsx o se eliminan
+
+  Archivos involucrados:
+    Frontend: CrearTarea.jsx, TareasAsignadasAdmin.jsx, HistorialTareasAdmin.jsx,
+              HistorialTareasUsuario.jsx, DashboardTareas.jsx,
+              ExportarEliminarTareasAdmin.jsx, ExportarEliminarTareasUsuario.jsx,
+              tareaService.js
+    Backend:  TareaController.java, TareaService.java, TareaRepository.java,
+              Tarea.java, NotaTarea.java, NotaTareaRepository.java,
+              TareaAuditLog.java, TareaAuditLogRepository.java
+
+23.4. Flujo de demo institucional
+
+  Demo.jsx -> POST /api/demo/solicitar
+  -> DemoController -> DemoService:
+     crea empresa demo + 3 usuarios (SUPERADMIN, ADMIN, USUARIO)
+     guarda DemoRegistro para cooldown
+     envia correo con credenciales via DemoEmailService
+  -> Respuesta incluye credenciales de respaldo
+
+  Archivos involucrados:
+    Frontend: Demo.jsx, Demo.css
+    Backend:  DemoController.java, DemoService.java, DemoEmailService.java,
+              DemoRegistroRepository.java, EmpresaRepository.java,
+              UsuarioRepository.java, RolRepository.java
+
+23.5. Flujo de notificaciones
+
+  Eventos (crear tarea, cambiar estado) -> NotificacionService.crearNotificacion()
+  -> Usuario hace GET /api/notificaciones -> ve notificaciones no leidas
+  -> PUT /api/notificaciones/{id}/leer -> marca como leida
+
+  Archivos involucrados:
+    Frontend: notificacionService.js
+    Backend:  NotificacionController.java, NotificacionService.java,
+              NotificacionRepository.java, Notificacion.java
+
+
+================================================================================
+24. CARPETAS GENERADAS (NO RECONSTRUIR A MANO)
+================================================================================
+
+  Smartmaint-frontend/node_modules    Dependencias npm (regenerar con npm install)
+  Smartmaint-frontend/build           Build de produccion (npm run build)
+  backend/target                      Artefactos Maven
+  backend/logs                        Logs de ejecucion
+  backend/uploads                     Archivos subidos por usuarios
+
+
+================================================================================
+25. PROBLEMAS RESUELTOS (HISTORICO TECNICO)
+================================================================================
+
+25.1. Error 500 al crear tarea
+      Causa: tareaService.js seteaba manualmente Content-Type: multipart/form-data
+      sin incluir el boundary. Al llegar al backend, Spring no podia parsear el body.
+      Solucion: eliminar el header manual. Axios lo asigna automaticamente con el
+      boundary correcto cuando detecta FormData.
+
+25.2. Modal de recuperacion de contrasena
+      Causa: el link "Click aqui" usaba <a href="/recuperar-contrasena"> hacia una
+      ruta inexistente y no existia ningun endpoint backend.
+      Solucion:
+      - Se creo POST /api/auth/recuperar-contrasena (publico, sin token)
+      - Se creo UsuarioService.recuperarContrasena() con SecureRandom
+      - Se creo RecuperacionEmailService.java con template HTML
+      - Se agrego permitAll() en SecurityConfig para esa ruta
+      - En Login.jsx el link se convirtio en un <span> que abre un modal interno
+      - El modal tiene campos email, estados sending/ok/error, y animacion de check
+
+25.3. Email de recuperacion no se enviaba
+      Causa: el remitente de RecuperacionEmailService usaba app.demo.mail.from
+      (outlook.com) que no era el remitente verificado en Brevo.
+      Solucion: cambiar a app.purchase.mail.from que usa la cuenta verificada.
+
+25.4. La transaccion de BD se deshacia si el correo fallaba
+      Causa: recuperarContrasena() estaba en @Transactional, el guardado y el
+      envio del correo compartian la misma transaccion. Si el correo lanzaba
+      excepcion, el rollback borraba el cambio de contrasena en BD.
+      Solucion: separar la responsabilidad.
+      UsuarioService.recuperarContrasena() hace COMMIT de BD y retorna los datos.
+      AuthController envia el correo DESPUES del commit, en un try separado.
+      Si el correo falla, se loguea como warning pero la contrasena temporal
+      ya esta persistida correctamente.
+
+25.5. Boton "Click aqui" se veia como boton azul grande
+      Causa: .login-form button en Login.css aplicaba estilos del boton de submit
+      a todos los <button> dentro del formulario, incluyendo el de recuperacion.
+      Solucion: cambiar el elemento de <button> a <span role="button" tabIndex={0}>
+      para que .login-form button no aplique. El span tiene estilos de enlace
+      identicos al texto "Adquiere un plan y registrala".
+
+
+================================================================================
+26. RECOMENDACIONES TECNICAS
+================================================================================
+
+- Mover credenciales de application.properties a variables de entorno seguras
+- Centralizar la URL base del frontend en .env en lugar de hardcodear localhost
+- Revisar archivos legacy: HistoriaTareasAdmin.css, DemoTest.java en controller,
+  SolicitudDemo.jsx (puede ser redundante con Demo.jsx)
+- Ampliar pruebas del frontend (actualmente hay session.test.js, App.test.js)
+- Considerar agregar documentacion interactiva via OpenAPI (ya tiene OpenApiConfig)
+- Revisar DemoTest.java en la carpeta controller (deberia estar en src/test)
+- La carpeta src/components/pricing/ esta vacia, definir si se usara
+
+
+================================================================================
+27. COMO RECONSTRUIR ESTE PROYECTO DESDE CERO
+================================================================================
+
+Fase 1. Definir el modelo de negocio
+  - Roles: SUPERADMIN / ADMIN / USUARIO
+  - Empresa, Usuario, Tarea, NotaTarea, Notificacion, Equipo, DemoRegistro, TareaAuditLog
+
+Fase 2. Crear base de datos PostgreSQL
+  - Crear tablas en orden de dependencias (rol -> empresa -> usuario -> tarea -> ...)
+  - Configurar Flyway para migraciones
+
+Fase 3. Crear backend Spring Boot
+  - Dependencias: Web, Security, JPA, Validation, Mail, PostgreSQL, Lombok, OpenAPI
+  - Entidades JPA -> Repositories -> Services -> Controllers
+  - JWT (JwtUtil + JwtFilter) + SecurityConfig
+  - GlobalExceptionHandler + ApiResponses
+  - InputSanitizer para sanitizar todos los inputs
+  - PurchaseEmailService como patron base para otros servicios de correo
+
+Fase 4. Crear frontend React
+  - React Router v6 con lazy loading
+  - AuthContext + useAuth + session.js
+  - apiClient.js con interceptores de token y expiracion
+  - App.jsx con rutas publicas y privadas
+  - Layout, RutaProtegida, RoleRedirect
+  - Paginas por funcionalidad con CSS separado
+  - Componentes UI reutilizables en src/components/ui/
+
+Fase 5. Funcionalidades avanzadas
+  - Notas por tarea, notificaciones automaticas
+  - Exportacion a Excel con xlsx
+  - Subida de archivos (FormData sin setear Content-Type manual)
+  - Demo institucional con correo
+  - Recuperacion de contrasena por correo (contrasena temporal + forzar cambio)
+  - Tema e idioma via localStorage
+
+Fase 6. Endurecer el proyecto
+  - Pruebas backend (JUnit + Mockito + H2)
+  - Validaciones en todos los endpoints
+  - Manejo global de errores bien tipado
+  - Revision de archivos legacy o duplicados
+  - Variables de entorno para todo lo sensible
+
+
+================================================================================
+28. RESUMEN FINAL
+================================================================================
+
+SmartMaint es una aplicacion cliente-servidor con autenticacion JWT y pantallas
+diferenciadas por rol (SUPERADMIN / ADMIN / USUARIO).
+
+El frontend React gestiona:
+- Paginas publicas (landing, login, planes, demo)
+- Autenticacion y persistencia de sesion (token en sessionStorage, datos en localStorage)
+- Proteccion de rutas por rol
+- Paneles y formularios de tareas
+- Modal de recuperacion de contrasena desde Login
+- Exportacion de datos a Excel
+
+El backend Spring Boot gestiona:
+- Emision y validacion de JWT
+- Permisos por rol con Spring Security
+- CRUD completo de tareas, usuarios, empresas
+- Flujo demo institucional con correo
+- Recuperacion de contrasena por correo (contrasena temporal + debeCambiarContrasena)
+- Notificaciones automaticas por eventos
+- Servicio de archivos adjuntos
+
+La base de datos PostgreSQL sostiene:
+- Usuarios, roles, empresas, planes
+- Tareas, notas de tareas, auditoria de tareas
+- Notificaciones, equipos
+- Registros de solicitudes demo
+
+Archivos que debes entender para dominar el sistema completo:
+
+Frontend:
+  App.jsx              Todas las rutas
+  AuthContext.jsx      Estado global de sesion
+  session.js           Logica de storage y token
+  apiClient.js         Comunicacion HTTP con el backend
+
+Backend:
+  SecurityConfig.java  Permisos y filtros HTTP
+  JwtFilter.java       Validacion del token en cada request
+  AuthController.java  Login, registro, recuperacion de contrasena
+  TareaController.java / TareaService.java   Corazon del negocio
+  GlobalExceptionHandler.java  Manejo de errores centralizado
+

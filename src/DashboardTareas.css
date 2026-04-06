@@ -1,0 +1,227 @@
+.dashboard-tareas-container {
+  display: grid;
+  gap: var(--sm-space-3);
+  color: var(--sm-color-text);
+}
+
+.dashboard-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1.5rem;
+  background:
+    radial-gradient(circle at top right, rgba(255, 202, 43, 0.24), transparent 24%),
+    linear-gradient(135deg, #0e417f, #14539f 64%, #1a69c6);
+  color: var(--sm-color-text-inverse);
+}
+
+.dashboard-kicker {
+  margin: 0 0 0.55rem;
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.dashboard-hero h1 {
+  margin: 0;
+}
+
+.dashboard-copy {
+  max-width: 42rem;
+  margin: 0.95rem 0 0;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.65;
+}
+
+.dashboard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.dashboard-actions .sm-button-ghost {
+  background: #fff;
+  color: var(--sm-color-primary);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.dashboard-actions .sm-button-ghost:hover {
+  background: #f0f5ff;
+}
+
+.dashboard-kpis {
+  margin-top: -0.4rem;
+}
+
+.dashboard-kpi-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-kpi-clickable {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dashboard-kpi-clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-kpi-active {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.dashboard-kpi-card::after {
+  content: '';
+  position: absolute;
+  inset: auto -2rem -2rem auto;
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  filter: blur(0.2rem);
+  opacity: 0.45;
+}
+
+.dashboard-kpi-card strong {
+  display: block;
+  margin: 0.5rem 0 0.35rem;
+  font-size: clamp(1.7rem, 1.45rem + 0.8vw, 2.4rem);
+  line-height: 1;
+}
+
+.dashboard-kpi-label {
+  display: inline-flex;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+}
+
+.dashboard-kpi-card span:last-child {
+  color: var(--sm-color-text-soft);
+  font-size: 0.92rem;
+}
+
+.dashboard-kpi-card-danger strong,
+.dashboard-kpi-card-danger .dashboard-kpi-label {
+  color: #c93442;
+}
+
+.dashboard-kpi-card-success strong,
+.dashboard-kpi-card-success .dashboard-kpi-label {
+  color: #1f8f5f;
+}
+
+.dashboard-kpi-card-warning strong,
+.dashboard-kpi-card-warning .dashboard-kpi-label {
+  color: #d27a00;
+}
+
+.dashboard-kpi-card-info strong,
+.dashboard-kpi-card-info .dashboard-kpi-label {
+  color: #0b4a94;
+}
+
+.dashboard-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dashboard-quick-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.dashboard-error,
+.dashboard-empty-state {
+  border-radius: 1rem;
+}
+
+.dashboard-error {
+  padding: 1rem 1.1rem;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #be123c;
+  font-weight: 600;
+}
+
+.dashboard-empty-state {
+  color: var(--sm-color-text-soft);
+}
+
+.dashboard-task-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.dashboard-task-card {
+  padding: 1.25rem 1.35rem;
+}
+
+.dashboard-task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.dashboard-task-header h3 {
+  margin: 0 0 0.45rem;
+  color: #123a72;
+  font-size: 1.15rem;
+}
+
+.dashboard-task-header p {
+  margin: 0;
+  color: var(--sm-color-text-soft);
+  line-height: 1.55;
+}
+
+.dashboard-task-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-top: 1rem;
+  color: #425872;
+  font-size: 0.93rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--sm-color-divider);
+}
+
+.dashboard-task-meta strong {
+  color: var(--sm-color-primary-strong);
+}
+
+@media (max-width: 64rem) {
+  .dashboard-hero,
+  .dashboard-task-header,
+  .dashboard-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dashboard-actions,
+  .dashboard-toolbar {
+    justify-content: flex-start;
+  }
+
+  .dashboard-task-meta {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 43rem) {
+  .dashboard-hero {
+    padding: 1.2rem;
+  }
+
+  .dashboard-kpi-card,
+  .dashboard-task-card {
+    padding: 1rem;
+  }
+}

@@ -1,0 +1,88 @@
+.eliminar-usuario-content {
+  width: 100%;
+}
+
+.eliminar-usuario-filtros {
+  margin-bottom: 14px;
+}
+
+.eliminar-usuario-filtros .btn-secundario {
+  background-color: #e2e8f0;
+  color: #1e3a5f;
+}
+
+.eliminar-usuario-filtros .btn-secundario:hover {
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+.form-error-box,
+.form-success-box {
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.form-error-box {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.form-success-box {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.eliminar-usuario-tabla-wrapper {
+  width: 100%;
+  background: #f8fafc;
+  border: 1px solid #dbe4ee;
+  border-radius: 12px;
+  overflow-x: auto;
+}
+
+.eliminar-usuario-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.eliminar-usuario-tabla th,
+.eliminar-usuario-tabla td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+  color: #1f3f64;
+}
+
+.eliminar-usuario-tabla th {
+  background: #f1f5f9;
+  font-weight: 700;
+}
+
+.btn-eliminar-usuario {
+  background-color: #b91c1c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.btn-eliminar-usuario:hover {
+  background-color: #991b1b;
+}
+
+@media (max-width: 768px) {
+  .eliminar-usuario-filtros {
+    flex-wrap: wrap;
+  }
+
+  .eliminar-usuario-filtros .filter-field,
+  .eliminar-usuario-filtros .filter-search {
+    flex: 1 1 100%;
+  }
+}

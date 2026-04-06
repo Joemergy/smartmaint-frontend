@@ -1,0 +1,49 @@
+@import './Layout.css';
+
+.historial-usuario-content {
+  width: 100%;
+  padding-top: 0;
+  display: grid;
+  gap: 24px;
+  align-content: start;
+}
+
+.historial-usuario-content .barra-filtros {
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.historial-usuario-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 0;
+}
+
+.historial-usuario-card {
+  min-height: 220px;
+}
+
+.historial-usuario-card p {
+  margin: 0 0 10px;
+  color: #16324f;
+  line-height: 1.5;
+}
+
+.historial-usuario-card .detalles-btn {
+  margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+  .historial-usuario-content {
+    padding-top: 0;
+  }
+
+  .historial-usuario-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}

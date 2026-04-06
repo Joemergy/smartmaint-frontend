@@ -1,0 +1,39 @@
+.registro-wrapper {
+  width: 100%;
+  max-width: 600px;
+  margin: 100px auto;
+  padding: 40px 20px;
+  background-color: #f5faff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.registro-titulo {
+  font-size: 2.2rem;
+  color: #004080;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.registro-mensaje {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+.registro-boton {
+  background-color: #FFD700;
+  color: #004080;
+  font-weight: bold;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.registro-boton:hover {
+  background-color: #e6c200;
+}

@@ -1,0 +1,40 @@
+.admin-panel-container {
+  min-height: 100vh;
+  padding: 60px 10%;
+  background: linear-gradient(135deg, #004080 0%, #0074d9 100%);
+  color: white;
+  text-align: center;
+}
+
+.admin-panel-container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.admin-panel-container p {
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.admin-actions button {
+  padding: 14px 28px;
+  background-color: white;
+  color: #004080;
+  border: none;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.admin-actions button:hover {
+  transform: scale(1.05);
+}
+

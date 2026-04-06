@@ -1,0 +1,430 @@
+.landing-container {
+  --landing-banner-height: 4.45rem;
+
+  scroll-behavior: smooth;
+  font-family: var(--sm-font-sans);
+  margin: 0;
+  padding-top: calc(var(--landing-banner-height) + 1.1rem);
+  background:
+    radial-gradient(circle at 10% 10%, rgba(220, 234, 254, 0.95) 0%, rgba(237, 244, 255, 0.96) 35%, rgba(255, 255, 255, 1) 85%),
+    linear-gradient(180deg, #f6f9fe 0%, #f2f7fd 42%, #ffffff 100%);
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: clip;
+}
+
+.landing-banner {
+  position: fixed;
+  inset: 0 0 auto 0;
+  background: linear-gradient(90deg, #0b3f83, var(--sm-color-primary) 55%, #0f5db8);
+  color: var(--sm-color-text-inverse);
+  z-index: 1000;
+  box-shadow: 0 0.25rem 1.125rem rgba(10, 34, 74, 0.24);
+}
+
+.banner-content {
+  width: min(82rem, calc(100% - clamp(1.2rem, 4vw, 3.5rem)));
+  margin: 0 auto;
+  padding: 0.9rem 0;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo {
+  flex: 0 0 auto;
+  color: var(--sm-color-text-inverse);
+  letter-spacing: 0.03em;
+  font-size: clamp(1.4rem, 1.1rem + 1.2vw, 2rem);
+  font-weight: 700;
+}
+
+.banner-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  flex: 0 1 auto;
+  max-width: 100%;
+}
+
+.banner-btn {
+  border: 0.1rem solid rgba(255, 255, 255, 0.85);
+  background-color: transparent;
+  color: var(--sm-color-text-inverse);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: clamp(0.8rem, 0.75rem + 0.25vw, 0.95rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.banner-btn:hover {
+  transform: translateY(-1px);
+}
+
+.login-btn {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.demo-btn {
+  background: var(--sm-color-secondary);
+  color: var(--sm-color-primary-strong);
+  border-color: var(--sm-color-secondary);
+}
+
+.landing-section {
+  width: min(82rem, calc(100% - clamp(1.2rem, 4vw, 3.5rem)));
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: clamp(2rem, 1.6rem + 2vw, 4rem) 0;
+}
+
+.landing-hero {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+  background:
+    radial-gradient(circle at top right, rgba(255, 202, 43, 0.22), transparent 28%),
+    linear-gradient(120deg, #eef5ff 10%, #e4efff 55%, #f8fbff 100%);
+  border: 1px solid var(--sm-color-border);
+  border-radius: var(--sm-radius-xl);
+  box-shadow: var(--sm-shadow-panel);
+}
+
+.hero-content {
+  width: min(82rem, calc(100% - clamp(1.2rem, 4vw, 3.5rem)));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(18rem, 1.05fr) minmax(16rem, 0.95fr);
+  gap: clamp(1rem, 2.2vw, 2.2rem);
+  align-items: center;
+  padding: clamp(1.1rem, 1rem + 1.7vw, 2.4rem);
+  box-sizing: border-box;
+}
+
+.landing-hero-badge {
+  margin-bottom: 1rem;
+}
+
+.hero-copy {
+  min-width: 0;
+}
+
+.hero-copy h1 {
+  margin: 0;
+  color: var(--sm-color-primary-strong);
+  line-height: 1.15;
+  font-weight: 800;
+  font-size: clamp(0.8rem, 0.68rem + 1.18vw, 2.2rem);
+}
+
+.hero-copy p {
+  margin: 1rem 0 0;
+  max-width: 42ch;
+  color: #2d4666;
+  line-height: 1.55;
+  font-size: clamp(0.92rem, 0.76rem + 0.22vw, 1.02rem);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 2.2rem;
+}
+
+.hero-cta {
+  min-width: 13rem;
+}
+
+.hero-secondary-cta {
+  min-width: 11rem;
+}
+
+.hero-visual {
+  min-height: clamp(14rem, 30vw, 22rem);
+  display: grid;
+  place-items: center;
+}
+
+.hero-proof {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.3rem;
+  color: #365476;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.hero-proof span {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--sm-color-border);
+  border-radius: 999px;
+  padding: 0.45rem 0.8rem;
+}
+
+.hero-visual-image {
+  width: min(100%, 27rem);
+  height: auto;
+  object-fit: contain;
+  border-radius: 6%;
+}
+
+.landing-story-grid,
+.benefits-grid,
+.use-cases-grid,
+.testimonials-grid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.landing-story-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.story-card,
+.benefit-card,
+.use-case-card,
+.testimonial-card,
+.final-cta-card {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--sm-color-border);
+  border-radius: var(--sm-radius-lg);
+  box-shadow: var(--sm-shadow-soft);
+}
+
+.story-card {
+  padding: 1.8rem;
+}
+
+.story-card-problem {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(247, 250, 255, 0.9));
+}
+
+.story-card-solution {
+  background: linear-gradient(180deg, rgba(14, 72, 143, 0.98), rgba(11, 57, 115, 0.98));
+  color: var(--sm-color-text-inverse);
+}
+
+.story-card-solution .story-title,
+.story-card-solution .story-copy,
+.story-card-solution .story-kicker {
+  color: var(--sm-color-text-inverse);
+}
+
+.story-kicker,
+.section-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.9rem;
+  color: var(--sm-color-primary);
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.story-title,
+.section-title {
+  margin: 0;
+  color: var(--sm-color-primary-strong);
+  font-size: clamp(1.4rem, 1.1rem + 1vw, 2.2rem);
+  line-height: 1.1;
+}
+
+.story-copy,
+.section-copy,
+.benefit-card p,
+.use-case-card p,
+.testimonial-author-block span {
+  color: var(--sm-color-text-soft);
+  line-height: 1.65;
+}
+
+.story-list {
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.story-list li {
+  position: relative;
+  padding-left: 1.35rem;
+  color: #2f4a6c;
+  line-height: 1.55;
+}
+
+.story-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55rem;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: #ffca2b;
+}
+
+.section-heading {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1.4rem;
+}
+
+.benefits-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.benefit-card,
+.use-case-card,
+.testimonial-card {
+  padding: 1.5rem;
+}
+
+.benefit-card h3 {
+  margin: 0 0 0.8rem;
+  color: var(--sm-color-primary-strong);
+  font-size: 1.1rem;
+}
+
+.use-cases-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.use-case-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(236, 244, 255, 0.92));
+}
+
+.use-case-card p {
+  margin: 0;
+  font-weight: 600;
+}
+
+.testimonials-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.testimonial-quote {
+  margin: 0 0 1.2rem;
+  color: #243f63;
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+.testimonial-author-block {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.testimonial-author-block strong {
+  color: #0e3c76;
+}
+
+.landing-final-cta {
+  padding-bottom: 4.2rem;
+}
+
+.final-cta-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.4rem;
+  padding: 1.8rem;
+  background: linear-gradient(135deg, rgba(10, 74, 149, 0.97), rgba(16, 95, 184, 0.95));
+}
+
+.final-cta-card .section-kicker,
+.final-cta-card .section-title,
+.final-cta-card .section-copy {
+  color: #ffffff;
+}
+
+.final-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  justify-content: flex-end;
+}
+
+@media (max-width: 64rem) {
+  .hero-content {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .hero-copy p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-actions,
+  .hero-proof {
+    justify-content: center;
+  }
+
+  .landing-story-grid,
+  .benefits-grid,
+  .use-cases-grid,
+  .testimonials-grid,
+  .final-cta-card {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-visual {
+    min-height: clamp(13rem, 45vw, 20rem);
+  }
+}
+
+@media (max-width: 43rem) {
+  .landing-hero {
+    border-radius: 0;
+  }
+
+  .banner-content {
+    width: min(75rem, calc(100% - 1rem));
+    flex-direction: column;
+    align-items: stretch;
+    padding-inline: 0;
+  }
+
+  .banner-buttons {
+    justify-content: flex-start;
+  }
+
+  .banner-btn {
+    flex: 1 1 10rem;
+  }
+
+  .landing-container {
+    --landing-banner-height: 7rem;
+    padding-top: calc(var(--landing-banner-height) + 0.9rem);
+  }
+
+  .landing-section {
+    width: min(75rem, calc(100% - 1rem));
+  }
+
+  .hero-content {
+    width: min(75rem, calc(100% - 1rem));
+  }
+
+  .story-card,
+  .benefit-card,
+  .use-case-card,
+  .testimonial-card,
+  .final-cta-card {
+    padding: 1.15rem;
+  }
+}

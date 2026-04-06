@@ -1,0 +1,201 @@
+﻿/* Import shared layout styles */
+@import './Layout.css';
+
+.crear-tarea-container {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.crear-tarea-container h1 {
+  color: #004080;
+  margin-bottom: 30px;
+}
+
+.crear-tarea-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.content-section.crear-tarea-page {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.crear-tarea-page .form-container {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.crear-tarea-card {
+  display: grid;
+  gap: var(--sm-space-3);
+}
+
+.crear-tarea-header {
+  max-width: 58rem;
+}
+
+.crear-tarea-title {
+  font-size: clamp(1.9rem, 1.5rem + 1vw, 2.9rem);
+}
+
+.crear-tarea-copy {
+  max-width: 50rem;
+}
+
+.content-section {
+  margin-top: 0; /* Ajustado para alinear con otras paginas */
+}
+
+.crear-tarea-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sm-space-3);
+}
+
+.crear-tarea-section {
+  display: grid;
+  gap: var(--sm-space-2);
+}
+
+.crear-tarea-section-heading {
+  margin-bottom: 0.25rem;
+}
+
+.grupal-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 2px;
+  color: #004080;
+  font-weight: bold;
+}
+
+.grupal-options span {
+  margin-bottom: 0;
+}
+
+.grupal-row {
+  display: flex;
+  gap: 20px;
+}
+
+.grupal-row label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: normal;
+}
+
+.grupal-row .sm-choice-card input[type="radio"] {
+  accent-color: var(--sm-color-primary);
+}
+
+.grupal-colaboradores {
+  margin-top: 0.75rem;
+}
+
+.grupal-colaboradores-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.grupal-col-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0.45rem 0.9rem;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  transition: border-color 0.18s, background 0.18s;
+  user-select: none;
+}
+
+.grupal-col-item:hover {
+  border-color: #004080;
+  background: #f0f6ff;
+}
+
+.grupal-col-seleccionado {
+  border-color: #004080;
+  background: #dbeafe;
+}
+
+.grupal-col-nombre {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.9rem;
+}
+
+.grupal-col-cargo {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.crear-tarea-actions {
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 900px) {
+  .grupal-options {
+    width: 100%;
+    gap: 8px;
+  }
+  .grupal-row {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+}
+
+.form-error {
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  font-weight: 700;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #be123c;
+}
+
+.tarea-creada-circulo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #FFD700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tarea-creada-circulo svg {
+  width: 44px;
+  height: 44px;
+}
+
+@media (max-width: 900px) {
+  .admin-content,
+  .crear-tarea-page .form-container {
+    width: calc(100% - 24px);
+    max-width: calc(100% - 24px);
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+}
+
+.crear-tarea-form input[type="file"] {
+  border: 1px dashed #9dbfe3;
+  background: #f8fbff;
+  padding: 12px;
+}
+
+

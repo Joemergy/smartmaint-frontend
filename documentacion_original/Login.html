@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smartmaint – Iniciar sesión</title>
+
+  <!-- Tipografías -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+
+ 
+</head>
+<body>
+
+  <!-- Encabezado -->
+  <header class="topbar">
+    <div class="logo">
+      <img src="logosmartmaint.png" alt="Smartmaint Logo">
+    </div>
+    <nav>
+      <ul>
+        <li><a href="perfil.html">Perfil</a></li>
+        <li><a href="equipos.html">Equipos</a></li>
+        <li><a href="#">Reportes</a></li>
+        <li><a href="#">Cerrar sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Sección Login -->
+  <section class="login-section">
+    <div class="login-container" data-aos="fade-up">
+      <h2>Iniciar sesión</h2>
+
+      <div class="login-options">
+        <button id="btnEmpresa">Ingresar como Empresa</button>
+        <button id="btnEmpleado">Ingresar como Empleado</button>
+      </div>
+
+      <form class="login-form" id="form-login">
+        <label for="correo">Correo</label>
+        <input type="email" id="correo" required>
+
+        <label for="contrasena">Contraseña</label>
+        <input type="password" id="contrasena" required>
+
+        <button type="submit">Acceder</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- AOS Init -->
+  <script>
+    AOS.init({ duration: 800, once: true });
+  </script>
+
+  <!-- Script de login -->
+  <script>
+    let tipoUsuario = null;
+
+    document.getElementById("btnEmpresa").addEventListener("click", () => {
+      tipoUsuario = "empresa";
+      document.getElementById("form-login").style.display = "flex";
+    });
+
+    document.getElementById("btnEmpleado").addEventListener("click", () => {
+      tipoUsuario = "empleado";
+      document.getElementById("form-login").style.display = "flex";
+    });
+
+    document.getElementById("form-login").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = {
+        correo: document.getElementById("correo").value.trim(),
+        contrasena: document.getElementById("contrasena").value.trim()
+      };
+
+      if (!data.correo || !data.contrasena) {
+        alert("⚠️ Todos los campos son obligatorios");
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:8080/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        const text = await res.text();
+        if (res.ok) {
+          const result = JSON.parse(text);
+          localStorage.setItem("token", result.token);
+          localStorage.setItem("correo", result.admin || result.correo);
+          localStorage.setItem("empresa", result.empresa || "");
+
+          if (result.rol === "ADMIN") {
+            window.location.href = "equipos.html";
+          } else {
+            window.location.href = "perfil.html";
+          }
+        } else {
+          alert("⚠️ " + text);
+        }
+      } catch (err) {
+        alert("❌ Error de conexión con el servidor");
+        console.error(err);
+      }
+    });
+  </script>
+
+</body>
+</html>

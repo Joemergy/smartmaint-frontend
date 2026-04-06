@@ -1,0 +1,68 @@
+.cambio-pass-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #f8fafc, #dbeafe);
+}
+
+.cambio-pass-box {
+  width: min(520px, 96vw);
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  box-shadow: 0 16px 36px rgba(2, 6, 23, 0.16);
+  padding: 22px;
+}
+
+.cambio-pass-box h2 {
+  margin: 0 0 6px;
+  color: #004080;
+}
+
+.cambio-pass-box p {
+  margin: 0 0 16px;
+  color: #334155;
+}
+
+.cambio-pass-box form {
+  display: grid;
+  gap: 8px;
+}
+
+.cambio-pass-box label {
+  color: #004080;
+  font-weight: 700;
+}
+
+.cambio-pass-box input {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.cambio-pass-error {
+  margin-top: 4px;
+  border-radius: 8px;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 10px;
+  font-weight: 600;
+}
+
+.cambio-pass-box button {
+  margin-top: 6px;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: #004080;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cambio-pass-box button:hover {
+  background: #003060;
+}

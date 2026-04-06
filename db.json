@@ -1,0 +1,22 @@
+{
+  "usuarios": [
+    {
+      "id": 1,
+      "email": "admin@smartmaint.com",
+      "password": "admin123",
+      "rol": "admin"
+    },
+    {
+      "id": 2,
+      "email": "tecnico@smartmaint.com",
+      "password": "tecnico123",
+      "rol": "tecnico"
+    }
+  ],
+  "empresas": [],
+  "planes": [
+    { "id": 1, "nombre": "Básico", "precio": 100 },
+    { "id": 2, "nombre": "Profesional", "precio": 250 },
+    { "id": 3, "nombre": "Corporativo", "precio": 500 }
+  ]
+}

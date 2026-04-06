@@ -1,0 +1,451 @@
+/* ExportarEliminarTareas.css */
+
+.exportar-eliminar-content {
+  width: 100%;
+  padding: 0;
+  background-color: #ffffff;
+  color: #1e293b;
+  display: grid;
+  gap: 24px;
+  align-content: start;
+}
+
+.exportar-eliminar-content h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #004080;
+  margin: 0;
+  padding: 0 0 10px 0;
+  border-bottom: 2px solid #FFD700;
+}
+
+.exportar-eliminar-content h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #16324f;
+  margin: 0 0 16px 0;
+}
+
+/* ========== SECCIÓN FILTROS DE FECHAS ========== */
+.filtro-fechas-seccion {
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 64, 128, 0.08);
+}
+
+.filtro-fechas {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.fecha-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fecha-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #16324f;
+}
+
+.fecha-input {
+  padding: 10px 12px;
+  border: 1px solid #cde4f5;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #f8fafc;
+  color: #1e293b;
+  transition: all 0.2s ease;
+  min-width: 150px;
+}
+
+.fecha-input:focus {
+  outline: none;
+  border-color: #004080;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(0, 64, 128, 0.1);
+}
+
+.btn-filtrar {
+  padding: 10px 24px;
+  background-color: #004080;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.btn-filtrar:hover:not(:disabled) {
+  background-color: #0055aa;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 64, 128, 0.25);
+}
+
+.btn-filtrar:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-filtrar:disabled {
+  background-color: #a0b5cc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.error-message {
+  padding: 12px 16px;
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+/* ========== SECCIÓN ACCIONES ========== */
+.acciones-seccion {
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 64, 128, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.info-tareas {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.info-tareas p {
+  font-size: 14px;
+  color: #16324f;
+  margin: 0;
+  font-weight: 500;
+}
+
+.info-tareas strong {
+  color: #004080;
+  font-weight: 700;
+}
+
+.botones-acciones {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-seleccionar-todas,
+.btn-exportar,
+.btn-eliminar {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-seleccionar-todas {
+  background-color: #004080;
+  color: white;
+}
+
+.btn-seleccionar-todas:hover:not(:disabled) {
+  background-color: #0055aa;
+  transform: translateY(-2px);
+}
+
+.btn-exportar {
+  background-color: #004080;
+  color: white;
+}
+
+.btn-exportar:hover:not(:disabled) {
+  background-color: #0055aa;
+  transform: translateY(-2px);
+}
+
+.btn-eliminar {
+  background-color: #FFD700;
+  color: #004080;
+}
+
+.btn-eliminar:hover:not(:disabled) {
+  background-color: #FFC107;
+  transform: translateY(-2px);
+}
+
+.btn-seleccionar-todas:disabled,
+.btn-exportar:disabled,
+.btn-eliminar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ========== GRID DE TAREAS ========== */
+.exportar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 0;
+}
+
+.exportar-card {
+  position: relative;
+  background: #ffffff;
+  border: 2px solid #dbeafe;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 2px 8px rgba(0, 64, 128, 0.08);
+  transition: all 0.2s ease;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+}
+
+.exportar-card:hover {
+  border-color: #004080;
+  box-shadow: 0 4px 16px rgba(0, 64, 128, 0.12);
+  transform: translateY(-2px);
+}
+
+.exportar-card.selected {
+  background-color: #e0f2fe;
+  border-color: #0891b2;
+  box-shadow: 0 4px 12px rgba(8, 145, 178, 0.15);
+}
+
+.tarea-checkbox {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #0891b2;
+}
+
+.exportar-card p {
+  margin: 8px 0;
+  color: #16324f;
+  line-height: 1.5;
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.exportar-card p strong {
+  color: #004080;
+  font-weight: 600;
+}
+
+.exportar-card .detalles-btn {
+  margin-top: auto;
+  padding: 8px 16px;
+  background-color: #004080;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.exportar-card .detalles-btn:hover {
+  background-color: #0055aa;
+  transform: translateY(-1px);
+}
+
+/* ========== MODAL DE CONFIRMACIÓN ========== */
+.modal-confirmacion-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(30, 41, 59, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: overlay-fade-in 0.22s ease-out;
+}
+
+@keyframes overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-confirmacion {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 28px;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  animation: modal-slide-in 0.22s ease-out;
+}
+
+@keyframes modal-slide-in {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-confirmacion h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #dc2626;
+  margin: 0 0 16px 0;
+}
+
+.modal-confirmacion p {
+  font-size: 14px;
+  color: #16324f;
+  margin: 0 0 8px 0;
+  line-height: 1.6;
+}
+
+.modal-confirmacion .advertencia {
+  color: #991b1b;
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+.modal-botones {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  justify-content: flex-end;
+}
+
+.btn-cancelar,
+.btn-confirmar-eliminar {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancelar {
+  background-color: #e2e8f0;
+  color: #16324f;
+}
+
+.btn-cancelar:hover:not(:disabled) {
+  background-color: #cbd5e1;
+}
+
+.btn-confirmar-eliminar {
+  background-color: #dc2626;
+  color: white;
+}
+
+.btn-confirmar-eliminar:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+.btn-cancelar:disabled,
+.btn-confirmar-eliminar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.mensaje-vacio {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+  font-size: 16px;
+  font-style: italic;
+}
+
+.fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .filtro-fechas {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fecha-input {
+    min-width: 100%;
+  }
+
+  .btn-filtrar {
+    width: 100%;
+  }
+
+  .acciones-seccion {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .info-tareas {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .botones-acciones {
+    width: 100%;
+  }
+
+  .btn-seleccionar-todas,
+  .btn-exportar,
+  .btn-eliminar {
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .exportar-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .modal-confirmacion {
+    width: 95%;
+    padding: 20px;
+  }
+}
