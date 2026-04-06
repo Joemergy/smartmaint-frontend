@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Planes.css';
 import fondoAdquirirPlan from './assets/Fondo_de_Adquirir_Plan.png';

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Badge from './components/ui/Badge';
 import Button from './components/ui/Button';
@@ -21,27 +21,24 @@ const benefitCards = [
   },
 ];
 
-const useCases = [
-  'Plantas y operaciones de mantenimiento preventivo y correctivo.',
-  'Instituciones con múltiples responsables, áreas y equipos técnicos.',
-  'Empresas que necesitan demo rápida para validar valor antes de contratar.',
-];
-
 const testimonials = [
   {
     quote: 'Pasamos de coordinar tareas por chats dispersos a tener seguimiento completo en una sola vista.',
     author: 'Laura Díaz',
     role: 'Jefe de Operaciones',
+    gender: 'f',
   },
   {
     quote: 'La demo institucional nos permitió validar el flujo en horas, no en semanas.',
     author: 'Andrés Molina',
     role: 'Director de Mantenimiento',
+    gender: 'm',
   },
   {
     quote: 'El equipo ganó claridad: responsables, prioridad y evidencia quedaron centralizados.',
     author: 'Camila Rojas',
     role: 'Coordinadora Administrativa',
+    gender: 'f',
   },
 ];
 
@@ -87,7 +84,7 @@ const LandingPage = () => {
         <section className="landing-hero landing-section">
           <div className="hero-content">
             <div className="hero-copy">
-              <Badge tone="info" className="landing-hero-badge">SaaS de mantenimiento institucional</Badge>
+              <Badge tone="info" className="landing-hero-badge">Gestión operativa inteligente</Badge>
               <h1>Gestiona mantenimiento, responsables y seguimiento desde una sola operación <em>SMARTMAINT</em></h1>
               <p>
                 SmartMaint centraliza tareas, notas, estados y evidencia operativa para que tu empresa deje de depender de hojas sueltas y coordinación manual.
@@ -129,21 +126,6 @@ const LandingPage = () => {
           </div>
         </section>
 
-        <section className="landing-section use-cases-section">
-          <div className="section-heading">
-            <span className="section-kicker">Casos de uso</span>
-            <h2 className="section-title">Pensado para organizaciones con carga operativa real.</h2>
-          </div>
-
-          <div className="use-cases-grid">
-            {useCases.map((item) => (
-              <Card key={item} className="use-case-card">
-                <p>{item}</p>
-              </Card>
-            ))}
-          </div>
-        </section>
-
         <section className="landing-section testimonials-section">
           <div className="section-heading">
             <span className="section-kicker">Validación comercial</span>
@@ -155,8 +137,16 @@ const LandingPage = () => {
               <Card key={testimonial.author} className="testimonial-card">
                 <p className="testimonial-quote">“{testimonial.quote}”</p>
                 <div className="testimonial-author-block">
-                  <strong>{testimonial.author}</strong>
-                  <span>{testimonial.role}</span>
+                  <div className={`testimonial-avatar testimonial-avatar--${testimonial.gender}`}>
+                    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <circle cx="24" cy="18" r="10" fill="white" opacity="0.92"/>
+                      <path d="M4 46 C4 30 44 30 44 46" fill="white" opacity="0.92"/>
+                    </svg>
+                  </div>
+                  <div className="testimonial-author-info">
+                    <strong>{testimonial.author}</strong>
+                    <span>{testimonial.role}</span>
+                  </div>
                 </div>
               </Card>
             ))}

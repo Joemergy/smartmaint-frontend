@@ -110,6 +110,7 @@
 
 .landing-hero-badge {
   margin-bottom: 1rem;
+  font-size: 0.72rem;
 }
 
 .hero-copy {
@@ -179,7 +180,6 @@
 
 .landing-story-grid,
 .benefits-grid,
-.use-cases-grid,
 .testimonials-grid {
   display: grid;
   gap: 1.25rem;
@@ -191,7 +191,6 @@
 
 .story-card,
 .benefit-card,
-.use-case-card,
 .testimonial-card,
 .final-cta-card {
   background: rgba(255, 255, 255, 0.88);
@@ -286,7 +285,6 @@
 }
 
 .benefit-card,
-.use-case-card,
 .testimonial-card {
   padding: 1.5rem;
 }
@@ -295,19 +293,6 @@
   margin: 0 0 0.8rem;
   color: var(--sm-color-primary-strong);
   font-size: 1.1rem;
-}
-
-.use-cases-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.use-case-card {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(236, 244, 255, 0.92));
-}
-
-.use-case-card p {
-  margin: 0;
-  font-weight: 600;
 }
 
 .testimonials-grid {
@@ -322,8 +307,39 @@
 }
 
 .testimonial-author-block {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.testimonial-avatar {
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.testimonial-avatar--m {
+  background: #5b8fc9;
+}
+
+.testimonial-avatar--f {
+  background: #a07bb5;
+}
+
+.testimonial-avatar svg {
+  width: 82%;
+  height: 82%;
+  display: block;
+}
+
+.testimonial-author-info {
   display: grid;
-  gap: 0.2rem;
+  gap: 0.1rem;
 }
 
 .testimonial-author-block strong {
@@ -374,7 +390,6 @@
 
   .landing-story-grid,
   .benefits-grid,
-  .use-cases-grid,
   .testimonials-grid,
   .final-cta-card {
     grid-template-columns: 1fr;
