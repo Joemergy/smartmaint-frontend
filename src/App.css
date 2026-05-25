@@ -1,0 +1,59 @@
+.app-container {
+  font-family: 'Inter', sans-serif;
+  background-color: #ffffff;
+}
+
+.topbar {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 24px 5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo img {
+  height: 80px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 32px;
+  margin: 0;
+  padding: 0;
+}
+
+nav a,
+nav button {
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  color: #1e293b;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+nav a:hover,
+nav button:hover {
+  color: #2563eb;
+}
+
+/* Fondo limpio sin imagen */
+.contenido-fondo {
+  background-color: #ffffff;
+  padding: 60px 10%;
+}
+
+/* Wrapper para vistas internas si lo usas */
+.vista-wrapper {
+  padding: 60px 10%;
+}
+
+body {
+  background-color: white;
+}
+
+

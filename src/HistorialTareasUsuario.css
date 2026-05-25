@@ -1,0 +1,69 @@
+@import './Layout.css';
+
+.historial-usuario-content {
+  width: 100%;
+  padding-top: 0;
+  display: grid;
+  gap: 24px;
+  align-content: start;
+}
+
+.historial-usuario-content .barra-filtros {
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.historial-usuario-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 0;
+}
+
+.historial-usuario-card {
+  min-height: 220px;
+}
+
+.historial-usuario-card p {
+  margin: 0 0 10px;
+  color: #16324f;
+  line-height: 1.5;
+}
+
+.historial-usuario-card .detalles-btn {
+  margin-top: 10px !important;
+  background-color: #004080 !important;
+  color: #ffffff !important;
+  border: none !important;
+  min-width: 145px !important;
+  padding: 0 22px !important;
+  height: 40px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 10px !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  text-decoration: none !important;
+  white-space: normal !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.historial-usuario-card .detalles-btn:hover {
+  background-color: #0055aa !important;
+}
+
+@media (max-width: 768px) {
+  .historial-usuario-content {
+    padding-top: 0;
+  }
+
+  .historial-usuario-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}

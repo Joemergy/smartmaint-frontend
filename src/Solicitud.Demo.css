@@ -1,0 +1,30 @@
+/* src/components/SolicitudDemo.css */
+.solicitud-demo input {
+  display: block;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.solicitud-demo button {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+}
+
+.demo-respuesta, .demo-error {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.demo-respuesta {
+  background: #e6f7e6;
+  border: 1px solid #b2d8b2;
+}
+
+.demo-error {
+  background: #fff3f3;
+  border: 1px solid #e0b4b4;
+  color: #a94442;
+}
