@@ -157,9 +157,8 @@ export const getSessionSnapshot = () => {
 };
 
 export const isTokenExpired = (token = getToken()) => {
-  const payload = parseJwtPayload(token);
-  if (!payload?.exp) return false;
-  return Date.now() >= payload.exp * 1000;
+  // La sesión no expira automáticamente, solo cuando el usuario decide cerrar sesión
+  return false;
 };
 
 export const clearStoredSession = () => {

@@ -1,8 +1,6 @@
 import axios from 'axios';
 import {
-  expireSession,
   getAuthHeader,
-  isTokenExpired,
   getRefreshToken,
   setRefreshToken,
   updateAccessToken,
@@ -39,15 +37,14 @@ apiClient.interceptors.request.use((config) => {
     return normalizedUrl.endsWith(normalizedEndpoint) || normalizedUrl.includes(normalizedEndpoint);
   });
 
-  // Si el token ya está expirado antes de enviar y hay refresh token, dejar
-  // que el response interceptor lo renueve. Solo abortar si no hay refresh token.
-  if (!isPublic && !config?.headers?.Authorization && isTokenExpired()) {
-    const refreshToken = getRefreshToken();
-    if (!refreshToken) {
-      expireSession();
-      return Promise.reject(new Error('Sesión expirada. Inicia sesión nuevamente.'));
-    }
-  }
+  // La sesión no expira automáticamente, solo cuando el usuario decide cerrar sesión
+  // if (!isPublic && !config?.headers?.Authorization && isTokenExpired()) {
+  //   const refreshToken = getRefreshToken();
+  //   if (!refreshToken) {
+  //     expireSession();
+  //     return Promise.reject(new Error('Sesión expirada. Inicia sesión nuevamente.'));
+  //   }
+  // }
 
   const nextConfig = { ...config };
   nextConfig.headers = {
@@ -84,6 +81,7 @@ apiClient.interceptors.response.use(
     }
 
     // 401: intentar renovar el access token con el refresh token
+    // La sesión no expira automáticamente, solo cuando el usuario decide cerrar sesión
     if (status === 401 && originalRequest && !originalRequest._retry) {
       // Si ya estamos renovando, encolar la request fallida
       if (isRefreshing) {
@@ -97,7 +95,8 @@ apiClient.interceptors.response.use(
 
       const refreshToken = getRefreshToken();
       if (!refreshToken) {
-        expireSession();
+        // No cerrar sesión automáticamente, dejar que el usuario decida
+        // expireSession();
         return Promise.reject(error);
       }
 
@@ -124,7 +123,8 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         drainQueue(refreshError, null);
-        expireSession();
+        // No cerrar sesión automáticamente, dejar que el usuario decida
+        // expireSession();
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

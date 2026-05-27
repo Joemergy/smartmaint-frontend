@@ -51,7 +51,7 @@
   -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   background: linear-gradient(95deg, rgba(7, 54, 111, 0.93), rgba(11, 74, 148, 0.9) 54%, rgba(23, 103, 196, 0.84));
-  box-shadow: 0 10px 26px rgba(10, 38, 78, 0.22);
+  box-shadow: 0 14px 32px rgba(11, 74, 148, 0.22);
 }
 
 .planes-banner-content {
@@ -262,8 +262,9 @@
   margin: 0;
   text-align: left;
   color: #0e3f7b;
-  font-size: clamp(1.35rem, 1.16rem + 0.48vw, 1.7rem);
-  font-weight: 900;
+  font-size: clamp(1.4rem, 1.1rem + 1vw, 2.2rem);
+  line-height: 1.1;
+  font-weight: 800;
 }
 
 .plan-precio {

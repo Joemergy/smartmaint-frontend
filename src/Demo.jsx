@@ -97,11 +97,11 @@ const Demo = () => {
           <section className="demo-hero-copy" aria-label="Encabezado de la solicitud">
             <span className="demo-kicker">Experiencia interactiva para ti</span>
             <h1 className="demo-title">
-              Solicita tu DEMO
-              <span className="demo-title-second-line">ahora mismo.</span>
+              SOLICITA TU DEMO
+              <span className="demo-title-second-line">AHORA MISMO</span>
             </h1>
             <p className="demo-subtitle">
-              Evalua <span className="demo-subtitle-brand"><em><strong>SMARTMAINT</strong></em></span> con datos reales de operacion,
+              Evalua <span className="demo-subtitle-brand">SMARTMAINT</span> con datos reales de operacion,
               flujo guiado y acceso inmediato para validar decisiones con tu equipo.
             </p>
 

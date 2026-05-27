@@ -151,9 +151,8 @@ body {
 }
 
 .demo-title {
-  font-size: clamp(2rem, 1.4rem + 2.4vw, 3.1rem);
-  line-height: 1.06;
-  letter-spacing: -0.02em;
+  font-size: clamp(1.4rem, 1.1rem + 1vw, 2.2rem);
+  line-height: 1.1;
   font-weight: 800;
   color: #0b3060;
   margin: 0;
@@ -174,7 +173,7 @@ body {
 }
 
 .demo-subtitle-brand {
-  color: #0b3060;
+  color: #41546f;
 }
 
 .demo-trust-row {
@@ -600,7 +599,7 @@ body {
   }
 
   .demo-title {
-    max-width: 14ch;
+    max-width: 10ch;
   }
 
   .demo-card {

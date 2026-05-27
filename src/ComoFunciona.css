@@ -27,7 +27,9 @@
   min-height: 12.3rem;
   padding: clamp(1rem, 0.9rem + 0.9vw, 1.4rem);
   border-radius: 1rem;
-  box-shadow: 0 0.75rem 1.6rem rgba(10, 50, 98, 0.22);
+  box-shadow:
+    0 20px 40px rgba(11, 74, 148, 0.5),
+    15px 0 30px rgba(11, 74, 148, 0.3);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -42,9 +44,15 @@
   box-shadow: 0 1rem 1.8rem rgba(10, 50, 98, 0.3);
 }
 
-.como-card:nth-child(1) { animation-delay: 0.1s; }
-.como-card:nth-child(2) { animation-delay: 0.2s; }
-.como-card:nth-child(3) { animation-delay: 0.3s; }
+.como-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.como-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.como-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
 
 @keyframes fadeUp {
   to {

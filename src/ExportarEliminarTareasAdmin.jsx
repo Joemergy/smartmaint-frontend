@@ -148,16 +148,38 @@ function ExportarEliminarTareasAdmin() {
     setCargando(true);
     try {
       const tareaIds = Array.from(tareaSeleccionadas);
-      await Promise.all(tareaIds.map((id) => eliminarTarea(id)));
-      
-      // Actualizar lista local
-      setTareas(tareas.filter((t) => !tareaSeleccionadas.has(t.id)));
-      setTodasLasTareas(todasLasTareas.filter((t) => !tareaSeleccionadas.has(t.id)));
-      setTareasSeleccionadas(new Set());
-      setMostrarConfirmacion(false);
-      setError('');
+      console.log('🗑️ Intentando eliminar tareas:', tareaIds);
+
+      const resultados = await Promise.allSettled(
+        tareaIds.map(async (id) => {
+          try {
+            const resultado = await eliminarTarea(id);
+            console.log('✅ Tarea eliminada:', id, resultado);
+            return { id, success: true };
+          } catch (error) {
+            console.error('❌ Error eliminando tarea:', id, error);
+            return { id, success: false, error };
+          }
+        })
+      );
+
+      const exitosos = resultados.filter(r => r.status === 'fulfilled' && r.value.success);
+      const fallidos = resultados.filter(r => r.status === 'rejected' || (r.status === 'fulfilled' && !r.value.success));
+
+      if (fallidos.length > 0) {
+        console.error('❌ Tareas que fallaron al eliminar:', fallidos);
+        setError(`Solo se eliminaron ${exitosos.length} de ${tareaIds.length} tareas. Algunas tareas no pudieron ser eliminadas.`);
+      } else {
+        console.log('✅ Todas las tareas eliminadas exitosamente');
+        // Actualizar lista local
+        setTareas(tareas.filter((t) => !tareaSeleccionadas.has(t.id)));
+        setTodasLasTareas(todasLasTareas.filter((t) => !tareaSeleccionadas.has(t.id)));
+        setTareasSeleccionadas(new Set());
+        setMostrarConfirmacion(false);
+        setError('');
+      }
     } catch (err) {
-      console.error('❌ Error eliminando tareas:', err);
+      console.error('❌ Error general eliminando tareas:', err);
       setError(err?.detalle || 'Error al eliminar tareas');
     } finally {
       setCargando(false);
@@ -173,7 +195,11 @@ function ExportarEliminarTareasAdmin() {
 
         <main className={`admin-content ${sidebarVisible ? 'con-sidebar' : 'sin-sidebar'}`}>
           <div className="exportar-eliminar-content">
-            <h1>Exportar o Eliminar Tareas</h1>
+            <div className="exportar-eliminar-hero">
+              <p className="exportar-eliminar-kicker">Gestión de tareas archivadas</p>
+              <h1>Exportar o Eliminar Tareas</h1>
+              <p className="exportar-eliminar-copy">Selecciona un rango de fechas para ver las tareas archivadas. Puedes exportarlas a Excel o eliminarlas permanentemente de la base de datos.</p>
+            </div>
 
             {/* Sección de filtros por fecha */}
             <div className="filtro-fechas-seccion">

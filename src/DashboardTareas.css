@@ -167,9 +167,80 @@
 .dashboard-task-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 1rem;
   margin-bottom: 0.85rem;
+}
+
+.dashboard-task-icon-container {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e0f2fe;
+  border-radius: 0.5rem;
+}
+
+.dashboard-task-icon {
+  width: 28px;
+  height: 28px;
+  color: #0284c7;
+}
+
+.dashboard-task-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-task-description {
+  margin: 0.5rem 0 0 0;
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.dashboard-task-description-placeholder {
+  width: 100%;
+  height: 2px;
+  background-color: rgba(224, 242, 254, 0.5);
+  margin: 0.5rem 0 0 0;
+}
+
+.button-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 0.5rem;
+}
+
+.dashboard-task-details-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #e0f2fe;
+  color: #0284c7;
+  padding: 0.35rem 0.75rem;
+  border: none;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 0.75rem;
+}
+
+.dashboard-task-details-button:hover {
+  background-color: #bae6fd;
+  transform: translateY(-1px);
+}
+
+.footer-icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
 }
 
 .dashboard-task-header h3 {
@@ -183,9 +254,56 @@
   text-transform: none;
 }
 
+.dashboard-task-title-label {
+  display: inline-block;
+  background-color: #e0f2fe;
+  color: #0284c7;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.dashboard-task-title-text {
+  margin: 0 0 0.55rem 0;
+  color: #10315d;
+  font-size: 1.1rem;
+  line-height: 1.2;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--sm-font-display);
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.dashboard-task-details-button {
+  display: inline-block;
+  background-color: #004080;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 0.75rem;
+}
+
+.dashboard-task-details-button:hover {
+  background-color: #0055aa;
+  transform: translateY(-1px);
+}
+
 .dashboard-task-status {
-  display: inline-flex;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   gap: 0.5rem;
   font-size: 0.95rem;
   color: #334d73;
@@ -206,6 +324,11 @@
   border-radius: 0 0 1rem 1rem;
   background: linear-gradient(90deg, #0e417f 0%, #14539f 55%, #1a69c6 100%);
   align-items: center;
+}
+
+.dashboard-task-meta-summary {
+  text-align: center;
+  justify-content: center;
 }
 
 .dashboard-task-meta span {

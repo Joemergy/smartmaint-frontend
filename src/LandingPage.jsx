@@ -85,9 +85,9 @@ const LandingPage = () => {
           <div className="hero-content">
             <div className="hero-copy">
               <Badge tone="info" className="landing-hero-badge">Gestión operativa inteligente</Badge>
-              <h1>Gestiona mantenimiento, responsables y seguimiento desde una sola operación <em>SMARTMAINT</em></h1>
+              <h1>Gestiona compromisos, responsables y seguimiento de tareas asignadas desde una sola plataforma</h1>
               <p>
-                SmartMaint centraliza tareas, notas, estados y evidencia operativa para que tu empresa deje de depender de hojas sueltas y coordinación manual.
+                Centraliza tareas, notas, estados y evidencia operativa para que tu empresa deje de depender de hojas sueltas y coordinación manual.
               </p>
               <div className="hero-actions">
                 <Button className="hero-cta" onClick={() => navigate('/demo')}>

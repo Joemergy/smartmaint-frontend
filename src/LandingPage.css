@@ -1,8 +1,8 @@
 .landing-container {
   --landing-banner-height: 4.45rem;
+  --shine-duration: 5s;
 
   scroll-behavior: smooth;
-  font-family: var(--sm-font-sans);
   margin: 0;
   padding-top: calc(var(--landing-banner-height) + 1.1rem);
   background:
@@ -11,6 +11,35 @@
   width: 100%;
   box-sizing: border-box;
   overflow-x: clip;
+  position: relative;
+}
+
+.landing-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shine var(--shine-duration) infinite 0s;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  50%,
+  100% {
+    left: 100%;
+  }
 }
 
 .landing-banner {
@@ -19,7 +48,30 @@
   background: linear-gradient(90deg, #0b3f83, var(--sm-color-primary) 55%, #0f5db8);
   color: var(--sm-color-text-inverse);
   z-index: 1000;
-  box-shadow: 0 0.25rem 1.125rem rgba(10, 34, 74, 0.24);
+  box-shadow:
+    0 20px 40px rgba(11, 74, 148, 0.5),
+    -20px 0 30px rgba(11, 74, 148, 0.3),
+    20px 0 30px rgba(11, 74, 148, 0.3);
+  overflow: hidden;
+  --shine-duration: 5s;
+}
+
+.landing-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shine var(--shine-duration) infinite 0s;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .banner-content {
@@ -120,9 +172,9 @@
 .hero-copy h1 {
   margin: 0;
   color: var(--sm-color-primary-strong);
-  line-height: 1.15;
+  font-size: clamp(1.4rem, 1.1rem + 1vw, 2.2rem);
+  line-height: 1.1;
   font-weight: 800;
-  font-size: clamp(0.8rem, 0.68rem + 1.18vw, 2.2rem);
 }
 
 .hero-copy p {
@@ -237,6 +289,7 @@
   color: var(--sm-color-primary-strong);
   font-size: clamp(1.4rem, 1.1rem + 1vw, 2.2rem);
   line-height: 1.1;
+  font-weight: 800;
 }
 
 .story-copy,
