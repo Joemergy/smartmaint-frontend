@@ -1,4 +1,5 @@
 import apiClient from './apiClient';
+import { getAuthHeader } from '../utils/session';
 
 const API_URL = '/usuarios';
 const DEFAULT_TIMEOUT = 10000;
@@ -7,6 +8,7 @@ const buildAxiosConfig = () => ({
   timeout: DEFAULT_TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
+    ...getAuthHeader(),
   },
 });
 

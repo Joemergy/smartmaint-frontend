@@ -1,6 +1,14 @@
 ﻿/* Import shared layout styles */
 @import './Layout.css';
 
+/* ========== FONDO GLOBAL PARA EVITAR ESPACIO BLANCO AL SCROLL ========== */
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+}
+
 /* ========== TEMA OSCURO / CLARO ========== */
 :root {
   --bg-primary: #ffffff;

@@ -114,7 +114,6 @@ const CrearUsuarioAdmin = () => {
     if (form.area === 'Otro' && !areaPersonalizada.trim()) return 'Escribe el área o departamento personalizado.';
     if (!form.telefono.trim()) return 'El teléfono de contacto es obligatorio.';
     if (!form.fechaIngreso) return 'La fecha de ingreso es obligatoria.';
-    if (!form.fotoPerfil) return 'La foto de perfil es obligatoria.';
     if (!form.rolSistema) return 'El rol dentro del sistema es obligatorio.';
 
     const idNormalized = form.idColaborador.trim().toLowerCase();
@@ -320,8 +319,8 @@ const CrearUsuarioAdmin = () => {
               </div>
 
               <div className="campo-group">
-                <label htmlFor="fotoPerfil">Foto de perfil</label>
-                <input id="fotoPerfil" type="file" accept="image/*" onChange={handleFoto} required />
+                <label htmlFor="fotoPerfil">Foto de perfil (opcional)</label>
+                <input id="fotoPerfil" type="file" accept="image/*" onChange={handleFoto} />
               </div>
 
               <div className="campo-group full">
@@ -355,6 +354,7 @@ const CrearUsuarioAdmin = () => {
                 />
               </svg>
             </div>
+            <p style={{ color: 'white', fontSize: '1.2rem', fontWeight: '600' }}>El nuevo colaborador ha sido creado exitosamente en el sistema.</p>
             <p className="confirm-modal-pass"><strong>Contraseña temporal:</strong> {passwordAsignada}</p>
             <button type="button" onClick={() => setShowConfirmModal(false)}>Cerrar</button>
           </div>

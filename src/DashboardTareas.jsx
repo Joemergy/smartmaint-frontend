@@ -40,6 +40,10 @@ const DashboardTareas = () => {
   const [error, setError] = useState('');
   const [expandedTasks, setExpandedTasks] = useState([]);
   const [closingTaskId, setClosingTaskId] = useState(null);
+  const [clearedTaskIds, setClearedTaskIds] = useState(() => {
+    const saved = localStorage.getItem('clearedTaskIds_admin');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   useEffect(() => {
     let ignore = false;
@@ -50,7 +54,8 @@ const DashboardTareas = () => {
         setError('');
         const data = await getTareasAdmin();
         if (!ignore) {
-          setTareas(Array.isArray(data) ? data : []);
+          const filteredData = Array.isArray(data) ? data.filter(t => !clearedTaskIds.includes(t.id)) : [];
+          setTareas(filteredData);
         }
       } catch (err) {
         if (!ignore) {
@@ -117,6 +122,14 @@ const DashboardTareas = () => {
     abrirDetalles(tarea.id);
   };
 
+  const handleLimpiarDashboard = () => {
+    const currentTaskIds = tareas.map(t => t.id);
+    const newClearedIds = [...clearedTaskIds, ...currentTaskIds];
+    setClearedTaskIds(newClearedIds);
+    localStorage.setItem('clearedTaskIds_admin', JSON.stringify(newClearedIds));
+    setTareas([]);
+  };
+
   return (
     <div className="admin-wrapper">
       <AdminHeader onToggleSidebar={() => setSidebarVisible((prev) => !prev)} />
@@ -138,6 +151,7 @@ const DashboardTareas = () => {
               <div className="dashboard-actions">
                 <Button size="lg" onClick={() => navigate('/crear-tarea')}>Crear tarea</Button>
                 <Button variant="ghost" size="lg" onClick={() => navigate('/historial-tareas-admin')}>Ver historial</Button>
+                <Button variant="ghost" size="lg" onClick={handleLimpiarDashboard}>Limpiar dashboard</Button>
               </div>
             </section>
 

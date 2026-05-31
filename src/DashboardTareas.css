@@ -270,7 +270,7 @@
 .dashboard-task-title-text {
   margin: 0 0 0.55rem 0;
   color: #10315d;
-  font-size: 1.1rem;
+  font-size: 15.6px;
   line-height: 1.2;
   font-weight: 600;
   text-transform: uppercase;
@@ -279,12 +279,13 @@
   word-wrap: break-word;
   word-break: break-word;
   overflow-wrap: break-word;
+  max-width: 70%;
 }
 
 .dashboard-task-details-button {
   display: inline-block;
-  background-color: #004080;
-  color: white;
+  background-color: #e0f2fe;
+  color: #0284c7;
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 0.5rem;
@@ -296,7 +297,7 @@
 }
 
 .dashboard-task-details-button:hover {
-  background-color: #0055aa;
+  background-color: #bae6fd;
   transform: translateY(-1px);
 }
 

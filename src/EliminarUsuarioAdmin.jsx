@@ -15,6 +15,7 @@ const EliminarUsuarioAdmin = () => {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const [filtroId, setFiltroId] = useState('');
   const [filtroNombre, setFiltroNombre] = useState('');
@@ -81,7 +82,7 @@ const EliminarUsuarioAdmin = () => {
     try {
       await eliminarUsuarioAdmin(usuario.id);
       setUsuarios((prev) => prev.filter((u) => u.id !== usuario.id));
-      setSuccessMsg(`Usuario ${usuario.nombreCompleto} eliminado correctamente.`);
+      setShowSuccessModal(true);
     } catch (err) {
       setErrorMsg(err?.detalle || 'No se pudo eliminar el usuario.');
     }
@@ -166,7 +167,7 @@ const EliminarUsuarioAdmin = () => {
                         <td>{usuario.nombreCompleto}</td>
                         <td>{usuario.correo}</td>
                         <td>{usuario.cargo || '—'}</td>
-                        <td>{usuario.rol || '—'}</td>
+                        <td>{usuario.rol === 'SUPERADMIN' ? '—' : (usuario.rol || '—')}</td>
                         <td>
                           <button
                             type="button"
@@ -185,6 +186,27 @@ const EliminarUsuarioAdmin = () => {
           </section>
         </main>
       </div>
+
+      {showSuccessModal && (
+        <div className="confirm-modal-overlay" onClick={() => setShowSuccessModal(false)}>
+          <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Usuario eliminado correctamente</h3>
+            <div className="confirm-modal-circulo">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polyline
+                  points="20 6 9 17 4 12"
+                  stroke="#004080"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+            <p style={{ color: 'white', fontSize: '1.2rem', fontWeight: '600' }}>El colaborador ha sido eliminado exitosamente del sistema.</p>
+            <button type="button" onClick={() => setShowSuccessModal(false)}>Cerrar</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
